@@ -1,0 +1,35 @@
+<header class="site-header" id="site-header">
+  <nav class="nav">
+    <a href="#" class="nav-logo">
+      <span class="nav-logo-text"><%= content.brand.name %></span>
+      <span class="script nav-logo-script"><%= content.brand.tagScript %></span>
+    </a>
+
+    <ul class="nav-links">
+      <% content.nav.forEach(function(link) { %>
+        <li><a href="<%= link.href %>" class="nav-link"><%= link.label %></a></li>
+      <% }); %>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="#contact" class="btn btn-outline-sm">Join Circle</a>
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <button class="mobile-close" id="mobile-close">✕</button>
+  <ul class="mobile-links">
+    <% content.nav.forEach(function(link) { %>
+      <li><a href="<%= link.href %>" class="mobile-link"><%= link.label %></a></li>
+    <% }); %>
+  </ul>
+  <div class="mobile-bottom">
+    <a href="#contact" class="btn btn-primary">Join the Inner Circle</a>
+  </div>
+</div>
+<div class="mobile-overlay" id="mobile-overlay"></div>
