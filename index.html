@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veloura Fem — Soft Power, Refined Always</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Great+Vibes&family=Instrument+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ── Design Tokens ── */
+    :root {
+      --forest-green: #1A3A2F;
+      --deep-pine: #0F2318;
+      --sage-mist: #4A7A63;
+      --pale-moss: #A8C4B5;
+      --ivory-cream: #F5F0E8;
+      --warm-white: #FAF7F2;
+      --sand-beige: #E8DDD0;
+      --warm-taupe: #B5A898;
+      --terracotta: #C4714A;
+      --blush-sienna: #D4956E;
+      --charcoal-ink: #1C1C1A;
+      --muted-graphite: #4A4845;
+    }
+
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--ivory-cream);
+      color: var(--muted-graphite);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Typography ── */
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; color: var(--charcoal-ink); }
+    .script { font-family: 'Great Vibes', cursive; }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 48px;
+      background: var(--warm-white);
+      border-bottom: 1px solid var(--sand-beige);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-weight: 300;
+      letter-spacing: 4px;
+      color: var(--forest-green);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    .nav-logo .script {
+      font-size: 20px;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--sage-mist);
+      margin-left: 4px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--muted-graphite);
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--forest-green); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-block;
+      padding: 14px 36px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .btn-primary {
+      background: var(--forest-green);
+      color: var(--ivory-cream);
+      border: none;
+    }
+    .btn-primary:hover { background: var(--sage-mist); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--charcoal-ink);
+      border: 1px solid var(--charcoal-ink);
+    }
+    .btn-secondary:hover { border-color: var(--forest-green); color: var(--forest-green); }
+    .btn-terracotta {
+      background: var(--terracotta);
+      color: #fff;
+      border: none;
+    }
+    .btn-terracotta:hover { background: var(--blush-sienna); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--charcoal-ink);
+      border: 1px solid var(--sand-beige);
+    }
+    .btn-ghost:hover { border-color: var(--charcoal-ink); }
+
+    /* ── Hero ── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 100px;
+      background: var(--deep-pine);
+      color: var(--ivory-cream);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 16px;
+      border: 1px solid rgba(168, 196, 181, 0.15);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--pale-moss);
+      margin-bottom: 32px;
+    }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(40px, 7vw, 72px);
+      color: var(--ivory-cream);
+      line-height: 1.1;
+      letter-spacing: 2px;
+    }
+    .hero .script {
+      display: block;
+      font-size: clamp(36px, 5vw, 56px);
+      color: var(--pale-moss);
+      margin-top: 8px;
+    }
+    .hero-sub {
+      font-size: 15px;
+      color: var(--warm-taupe);
+      max-width: 480px;
+      margin: 32px auto 48px;
+      line-height: 1.8;
+    }
+    .hero-divider {
+      width: 64px;
+      height: 1px;
+      background: var(--sage-mist);
+      margin: 48px auto 0;
+    }
+
+    /* ── Section shared ── */
+    section { padding: 96px 48px; }
+    .section-eyebrow {
+      font-size: 11px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--warm-taupe);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-weight: 300;
+      font-size: clamp(28px, 4vw, 44px);
+      margin-bottom: 16px;
+    }
+    .section-title em {
+      font-style: italic;
+      font-weight: 300;
+    }
+    .section-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 18px;
+      color: var(--warm-taupe);
+      max-width: 520px;
+    }
+    .center { text-align: center; margin-left: auto; margin-right: auto; }
+
+    /* ── Philosophy ── */
+    .philosophy {
+      background: var(--warm-white);
+      text-align: center;
+    }
+    .philosophy .section-subtitle { margin: 0 auto 48px; }
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 32px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .pillar {
+      padding: 40px 24px;
+      border: 1px solid var(--sand-beige);
+      border-radius: 4px;
+      transition: box-shadow 0.3s;
+    }
+    .pillar:hover {
+      box-shadow: 0 8px 32px rgba(26, 58, 47, 0.06);
+    }
+    .pillar h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 24px;
+      margin-bottom: 12px;
+      color: var(--forest-green);
+    }
+    .pillar p {
+      font-size: 14px;
+      color: var(--warm-taupe);
+    }
+
+    /* ── Collection ── */
+    .collection { background: var(--ivory-cream); }
+    .collection-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    .card {
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--warm-white);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(26, 58, 47, 0.08);
+    }
+    .card-img {
+      height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .card-img.green { background: var(--forest-green); color: var(--pale-moss); }
+    .card-img.sage { background: var(--sage-mist); color: var(--ivory-cream); }
+    .card-img.taupe { background: var(--sand-beige); color: var(--warm-taupe); }
+    .card-body {
+      padding: 24px;
+    }
+    .card-body h3 {
+      font-weight: 400;
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+    .card-meta {
+      font-size: 13px;
+      color: var(--warm-taupe);
+      margin-bottom: 12px;
+    }
+    .card-price {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--charcoal-ink);
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+    .badge-green { background: var(--forest-green); color: var(--ivory-cream); }
+    .badge-terracotta { background: var(--terracotta); color: #fff; }
+    .badge-muted { background: var(--sand-beige); color: var(--muted-graphite); }
+
+    /* ── Editorial Banner ── */
+    .editorial {
+      background: var(--forest-green);
+      color: var(--ivory-cream);
+      text-align: center;
+      padding: 96px 48px;
+      position: relative;
+    }
+    .editorial::before {
+      content: '';
+      position: absolute;
+      inset: 12px;
+      border: 1px solid rgba(168, 196, 181, 0.12);
+      pointer-events: none;
+    }
+    .editorial .section-eyebrow { color: var(--pale-moss); }
+    .editorial blockquote {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(24px, 4vw, 40px);
+      font-weight: 300;
+      line-height: 1.4;
+      max-width: 700px;
+      margin: 0 auto 16px;
+      color: var(--ivory-cream);
+    }
+    .editorial cite {
+      font-family: 'Instrument Sans', sans-serif;
+      font-style: normal;
+      font-size: 12px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--warm-taupe);
+    }
+
+    /* ── Newsletter ── */
+    .newsletter {
+      background: var(--warm-white);
+      text-align: center;
+    }
+    .newsletter .section-subtitle {
+      margin: 0 auto 40px;
+    }
+    .newsletter-form {
+      display: flex;
+      gap: 12px;
+      max-width: 480px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .newsletter-form input {
+      flex: 1;
+      min-width: 240px;
+      padding: 14px 20px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 14px;
+      border: 1px solid var(--sand-beige);
+      border-radius: 4px;
+      background: var(--ivory-cream);
+      color: var(--charcoal-ink);
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .newsletter-form input::placeholder { color: var(--warm-taupe); }
+    .newsletter-form input:focus { border-color: var(--forest-green); }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--deep-pine);
+      color: var(--pale-moss);
+      padding: 64px 48px 32px;
+    }
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 48px;
+      max-width: 1080px;
+      margin: 0 auto 48px;
+    }
+    .footer-brand .nav-logo { font-size: 20px; color: var(--ivory-cream); }
+    .footer-brand p {
+      font-size: 14px;
+      color: var(--warm-taupe);
+      margin-top: 12px;
+      max-width: 280px;
+      line-height: 1.7;
+    }
+    .footer-col h4 {
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--warm-taupe);
+      margin-bottom: 20px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 12px; }
+    .footer-col a {
+      font-size: 14px;
+      color: var(--pale-moss);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-col a:hover { color: var(--ivory-cream); }
+    .footer-bottom {
+      text-align: center;
+      padding-top: 32px;
+      border-top: 1px solid rgba(168, 196, 181, 0.12);
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    .footer-bottom p {
+      font-size: 12px;
+      color: var(--warm-taupe);
+      letter-spacing: 1px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      nav { padding: 20px 24px; }
+      .nav-links { display: none; }
+      section { padding: 64px 24px; }
+      .hero { padding: 80px 24px 64px; }
+      .footer-top { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="#" class="nav-logo">VELOURA <span class="script">Fem</span></a>
+    <ul class="nav-links">
+      <li><a href="#collection">Collection</a></li>
+      <li><a href="#philosophy">Philosophy</a></li>
+      <li><a href="#story">Story</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <p class="hero-eyebrow">Established 2026</p>
+    <h1>
+      VELOURA
+      <span class="script">Fem</span>
+    </h1>
+    <p class="hero-sub">
+      She does not chase trends. She sets the standard.
+      A curated world of quiet luxury, editorial elegance,
+      and intentional design.
+    </p>
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+      <a href="#collection" class="btn btn-terracotta">Explore Collection</a>
+      <a href="#philosophy" class="btn btn-ghost" style="color: var(--ivory-cream); border-color: var(--pale-moss);">Our Philosophy</a>
+    </div>
+    <div class="hero-divider"></div>
+  </section>
+
+  <!-- Philosophy -->
+  <section class="philosophy" id="philosophy">
+    <p class="section-eyebrow">Brand Ethos</p>
+    <h2 class="section-title"><em>The Art of Restraint</em></h2>
+    <p class="section-subtitle">Every stitch, every pixel &mdash; deliberate. Luxury without coldness, confidence without noise.</p>
+    <div class="pillars">
+      <div class="pillar">
+        <h3>Quiet</h3>
+        <p>Never loud. Confidence whispers.</p>
+      </div>
+      <div class="pillar">
+        <h3>Intentional</h3>
+        <p>Every detail is a decision.</p>
+      </div>
+      <div class="pillar">
+        <h3>Warm</h3>
+        <p>Luxury without coldness.</p>
+      </div>
+      <div class="pillar">
+        <h3>Timeless</h3>
+        <p>No trends. Only principles.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Collection -->
+  <section class="collection" id="collection">
+    <div class="collection-header">
+      <p class="section-eyebrow">Curated Pieces</p>
+      <h2 class="section-title"><em>The Collection</em></h2>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-img green">[ Image ]</div>
+        <div class="card-body">
+          <span class="badge badge-green">New Arrival</span>
+          <h3>Velvet Drape</h3>
+          <p class="card-meta">Emerald &middot; Bespoke</p>
+          <p class="card-price">PKR 24,500</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-img sage">[ Image ]</div>
+        <div class="card-body">
+          <span class="badge badge-terracotta">Limited</span>
+          <h3>Elysian Cape</h3>
+          <p class="card-meta">Ivory &middot; Limited Edition</p>
+          <p class="card-price">PKR 38,000</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-img taupe">[ Image ]</div>
+        <div class="card-body">
+          <span class="badge badge-muted">Archive</span>
+          <h3>The Founder's Set</h3>
+          <p class="card-meta">Curated &middot; Archive</p>
+          <p class="card-price">PKR 12,900</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Editorial Quote -->
+  <section class="editorial" id="story">
+    <p class="section-eyebrow">Brand Voice</p>
+    <blockquote>
+      &ldquo;She does not chase trends.<br>
+      She sets the standard.&rdquo;
+    </blockquote>
+    <cite>&mdash; Veloura Fem</cite>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter" id="contact">
+    <p class="section-eyebrow">Stay Connected</p>
+    <h2 class="section-title"><em>Join the Inner Circle</em></h2>
+    <p class="section-subtitle">Receive early access to new collections, editorial stories, and exclusive invitations.</p>
+    <form class="newsletter-form" onsubmit="event.preventDefault()">
+      <input type="email" placeholder="Your email address" aria-label="Email address">
+      <button type="submit" class="btn btn-primary">Subscribe</button>
+    </form>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">VELOURA <span class="script">Fem</span></a>
+        <p>Quiet luxury, editorial elegance, and intentional design. Established 2026.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="#">Collection</a></li>
+          <li><a href="#">Lookbook</a></li>
+          <li><a href="#">New Arrivals</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Brand</h4>
+        <ul>
+          <li><a href="#">Our Story</a></li>
+          <li><a href="#">Philosophy</a></li>
+          <li><a href="#">Design System</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Pinterest</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Veloura Fem. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
