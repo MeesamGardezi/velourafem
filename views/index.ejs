@@ -15,16 +15,16 @@
     <div class="hero-border"></div>
 
     <div class="hero-content">
-      <p class="hero-eyebrow reveal-up"><%= content.hero.eyebrow %></p>
+      <p class="hero-eyebrow"><%= content.hero.eyebrow %></p>
 
       <h1 class="hero-title">
-        <span class="hero-title-line reveal-up delay-1"><%= content.hero.headline %></span>
-        <span class="hero-title-script script reveal-up delay-2"><%= content.hero.headlineAccent %></span>
+        <span class="hero-title-line"><%= content.hero.headline %></span>
+        <span class="hero-title-script script"><%= content.hero.headlineAccent %></span>
       </h1>
 
-      <p class="hero-sub reveal-up delay-3"><%= content.hero.subheadline %></p>
+      <p class="hero-sub"><%= content.hero.subheadline %></p>
 
-      <div class="hero-actions reveal-up delay-4">
+      <div class="hero-actions">
         <a href="<%= content.hero.ctaPrimary.href %>" class="btn btn-terracotta">
           <%= content.hero.ctaPrimary.label %>
         </a>
@@ -33,7 +33,7 @@
         </a>
       </div>
 
-      <div class="hero-scroll reveal-up delay-5">
+      <div class="hero-scroll">
         <div class="hero-scroll-line"></div>
         <span><%= content.hero.scrollLabel %></span>
       </div>
@@ -56,7 +56,7 @@
   <section class="stats-section">
     <div class="stats-grid">
       <% content.stats.forEach(function(stat) { %>
-        <div class="stat-item reveal">
+        <div class="stat-item">
           <span class="stat-value" data-value="<%= stat.value %>"><%= stat.value %></span>
           <span class="stat-label"><%= stat.label %></span>
         </div>
@@ -68,17 +68,17 @@
   <section class="philosophy" id="philosophy">
     <div class="philosophy-inner">
       <div class="philosophy-header">
-        <p class="section-eyebrow reveal-up"><%= content.philosophy.eyebrow %></p>
-        <h2 class="section-title reveal-up delay-1">
+        <p class="section-eyebrow"><%= content.philosophy.eyebrow %></p>
+        <h2 class="section-title">
           <%= content.philosophy.title %>
           <em class="script-heading"><%= content.philosophy.titleAccent %></em>
         </h2>
-        <p class="section-subtitle reveal-up delay-2"><%= content.philosophy.subtitle %></p>
+        <p class="section-subtitle"><%= content.philosophy.subtitle %></p>
       </div>
 
       <div class="pillars">
         <% content.philosophy.pillars.forEach(function(pillar, i) { %>
-          <div class="pillar reveal delay-<%= i %>">
+          <div class="pillar">
             <div class="pillar-icon"><%= pillar.icon %></div>
             <h3 class="pillar-title"><%= pillar.title %></h3>
             <p class="pillar-body"><%= pillar.body %></p>
@@ -93,14 +93,14 @@
   <section class="collection" id="collection">
     <div class="collection-inner">
       <div class="collection-header">
-        <p class="section-eyebrow reveal-up"><%= content.collection.eyebrow %></p>
-        <h2 class="section-title reveal-up delay-1"><em><%= content.collection.title %></em></h2>
-        <p class="section-subtitle reveal-up delay-2"><%= content.collection.subtitle %></p>
+        <p class="section-eyebrow"><%= content.collection.eyebrow %></p>
+        <h2 class="section-title"><em><%= content.collection.title %></em></h2>
+        <p class="section-subtitle"><%= content.collection.subtitle %></p>
       </div>
 
       <div class="cards">
         <% content.collection.items.forEach(function(item, i) { %>
-          <article class="card reveal delay-<%= i % 3 %>">
+          <article class="card">
             <div class="card-img card-img--<%= item.color %>">
               <div class="card-img-label"><%= item.meta %></div>
               <div class="card-img-overlay">
@@ -121,7 +121,7 @@
         <% }); %>
       </div>
 
-      <div class="collection-cta reveal">
+      <div class="collection-cta">
         <a href="#" class="btn btn-secondary">View Full Collection</a>
       </div>
     </div>
@@ -130,12 +130,12 @@
   <!-- ═══ EDITORIAL SPLIT ═══ -->
   <section class="editorial" id="editorial">
     <div class="editorial-inner">
-      <div class="editorial-left reveal-left">
+      <div class="editorial-left">
         <p class="section-eyebrow"><%= content.editorial.eyebrow %></p>
         <blockquote class="editorial-quote"><%= content.editorial.quote %></blockquote>
         <cite class="editorial-cite"><%= content.editorial.cite %></cite>
       </div>
-      <div class="editorial-right reveal-right">
+      <div class="editorial-right">
         <div class="editorial-panel">
           <div class="editorial-grain"></div>
           <div class="editorial-orb"></div>
@@ -148,8 +148,8 @@
   <!-- ═══ TESTIMONIALS ═══ -->
   <section class="testimonials-section">
     <div class="testimonials-inner">
-      <p class="section-eyebrow center reveal-up">Worn & Loved</p>
-      <h2 class="section-title center reveal-up delay-1">The Women <em>Behind the Drape</em></h2>
+      <p class="section-eyebrow center">Worn & Loved</p>
+      <h2 class="section-title center">The Women <em>Behind the Drape</em></h2>
 
       <div class="testimonials-track-wrap">
         <div class="testimonials-track" id="testimonials-track">
@@ -183,8 +183,8 @@
   <section class="process-section" id="story">
     <div class="process-inner">
       <div class="process-header">
-        <p class="section-eyebrow reveal-up"><%= content.process.eyebrow %></p>
-        <h2 class="section-title reveal-up delay-1">
+        <p class="section-eyebrow"><%= content.process.eyebrow %></p>
+        <h2 class="section-title">
           <%= content.process.title %>
           <em class="script-heading"><%= content.process.titleAccent %></em>
         </h2>
@@ -192,7 +192,7 @@
 
       <div class="process-steps">
         <% content.process.steps.forEach(function(step, i) { %>
-          <div class="process-step reveal delay-<%= i %>">
+          <div class="process-step">
             <div class="step-num"><%= step.num %></div>
             <div class="step-content">
               <h3 class="step-title"><%= step.title %></h3>
@@ -215,11 +215,11 @@
         <div class="newsletter-orb newsletter-orb-2"></div>
       </div>
 
-      <p class="section-eyebrow center reveal-up"><%= content.newsletter.eyebrow %></p>
-      <h2 class="section-title center reveal-up delay-1"><em><%= content.newsletter.title %></em></h2>
-      <p class="section-subtitle center reveal-up delay-2"><%= content.newsletter.subtitle %></p>
+      <p class="section-eyebrow center"><%= content.newsletter.eyebrow %></p>
+      <h2 class="section-title center"><em><%= content.newsletter.title %></em></h2>
+      <p class="section-subtitle center"><%= content.newsletter.subtitle %></p>
 
-      <form class="newsletter-form reveal-up delay-3" onsubmit="handleSubscribe(event)">
+      <form class="newsletter-form" onsubmit="handleSubscribe(event)">
         <div class="newsletter-input-wrap">
           <input
             type="email"
@@ -242,6 +242,7 @@
 <!-- GSAP CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
 
 <!-- App JS -->
 <script src="/js/main.js"></script>
