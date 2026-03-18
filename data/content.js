@@ -144,6 +144,18 @@ module.exports = {
     },
   ],
 
+  lookbook: {
+    eyebrow: 'The Lookbook',
+    title: 'A Visual Diary',
+    items: [
+      { title: 'Forest Reverie', season: 'AW 2026', color: 'green' },
+      { title: 'Ivory Morning', season: 'SS 2026', color: 'ivory' },
+      { title: 'Obsidian Hour', season: 'AW 2026', color: 'dark' },
+      { title: 'Blush at Dusk', season: 'Resort 2026', color: 'blush' },
+      { title: 'Celadon Mist', season: 'SS 2026', color: 'celadon' },
+    ],
+  },
+
   editorial: {
     eyebrow: 'Brand Voice',
     quote: '"She does not chase trends. She sets the standard."',
