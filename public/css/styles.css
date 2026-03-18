@@ -1598,11 +1598,208 @@ body.cursor-click .cursor-dot {
 }
 
 /* ═══════════════════════════════
-   GSAP UTILITY CLASSES
-   (Initial states — GSAP handles reveal)
+   SCROLL PROGRESS BAR
 ═══════════════════════════════ */
-.gs-hidden {
-  visibility: hidden;
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--sage-mist), var(--terracotta));
+  z-index: 1001;
+  will-change: width;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════
+   BACK TO TOP
+═══════════════════════════════ */
+.back-to-top {
+  position: fixed;
+  bottom: 36px;
+  right: 36px;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--sand-beige);
+  border-radius: 50%;
+  background: var(--warm-white);
+  color: var(--charcoal-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: none;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(16px);
+  transition: opacity var(--duration) var(--ease-out),
+              transform var(--duration) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-smooth),
+              background var(--duration-fast) var(--ease-smooth);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  border-color: var(--forest-green);
+  background: var(--forest-green);
+  color: var(--ivory-cream);
+}
+
+/* ═══════════════════════════════
+   SECTION DIVIDERS
+═══════════════════════════════ */
+.section-divider {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 56px;
+  color: var(--sand-beige);
+  overflow: hidden;
+}
+
+.section-divider svg {
+  width: 100%;
+  height: 2px;
+  display: block;
+}
+
+.divider-line {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+}
+
+/* ═══════════════════════════════
+   CARD SVG DECORATIONS
+═══════════════════════════════ */
+.card-svg-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.card-svg {
+  width: 60%;
+  height: 60%;
+  opacity: 0.7;
+}
+
+/* ═══════════════════════════════
+   CARD WIPE REVEAL
+═══════════════════════════════ */
+.card-wipe {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  transform-origin: left;
+}
+
+.card-img--green  .card-wipe { background: var(--forest-green); }
+.card-img--sage   .card-wipe { background: var(--sage-mist); }
+.card-img--taupe  .card-wipe { background: var(--warm-taupe); }
+.card-img--dark   .card-wipe { background: #1a1a1a; }
+.card-img--blush  .card-wipe { background: #c9a89a; }
+.card-img--celadon .card-wipe { background: var(--pale-moss); }
+
+/* ═══════════════════════════════
+   LOOKBOOK — Horizontal Scroll
+═══════════════════════════════ */
+.lookbook {
+  background: var(--deep-pine);
+  padding: 96px 0 96px 56px;
+  overflow: hidden;
+  position: relative;
+}
+
+.lookbook-header {
+  margin-bottom: 56px;
+}
+
+.lookbook .section-eyebrow { color: var(--pale-moss); }
+.lookbook .section-title { color: var(--ivory-cream); }
+
+.lookbook-track-wrap {
+  overflow: visible;
+}
+
+.lookbook-track {
+  display: flex;
+  gap: 28px;
+  will-change: transform;
+}
+
+.lookbook-card {
+  flex: 0 0 380px;
+  height: 500px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.lookbook-card--green   { background: linear-gradient(160deg, #0d1f17, var(--forest-green)); }
+.lookbook-card--ivory   { background: linear-gradient(160deg, var(--sand-beige), var(--warm-white)); }
+.lookbook-card--dark    { background: linear-gradient(160deg, #0a0a0a, #222); }
+.lookbook-card--blush   { background: linear-gradient(160deg, #b5908a, #e0c0b5); }
+.lookbook-card--celadon { background: linear-gradient(160deg, #7ba393, var(--mint-whisper)); }
+
+.lookbook-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  padding: 36px;
+}
+
+.lookbook-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.lookbook-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+.lookbook-num {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px;
+  font-weight: 300;
+  color: rgba(245, 240, 232, 0.12);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.lookbook-card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: 28px;
+  color: var(--ivory-cream);
+  margin-bottom: 6px;
+}
+
+.lookbook-card--ivory .lookbook-card-title { color: var(--charcoal-ink); }
+.lookbook-card--ivory .lookbook-num { color: rgba(28, 28, 26, 0.08); }
+.lookbook-card--ivory .lookbook-season { color: var(--warm-taupe); }
+
+.lookbook-season {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(245, 240, 232, 0.5);
 }
 
 /* ═══════════════════════════════
@@ -1620,6 +1817,7 @@ body.cursor-click .cursor-dot {
   .step-connector { display: none; }
   .footer-top { grid-template-columns: 1fr 1fr; gap: 48px; }
   .footer-brand { grid-column: 1 / -1; }
+  .lookbook-card { flex: 0 0 320px; height: 420px; }
 }
 
 @media (max-width: 900px) {
@@ -1633,6 +1831,9 @@ body.cursor-click .cursor-dot {
   .stat-item:nth-child(2) { border-right: none; }
   .stat-item:nth-child(3) { border-right: 1px solid var(--sand-beige); border-top: 1px solid var(--sand-beige); }
   .stat-item:nth-child(4) { border-right: none; border-top: 1px solid var(--sand-beige); }
+  .lookbook { padding-left: 28px; }
+  .lookbook-card { flex: 0 0 280px; height: 380px; }
+  .section-divider { padding: 0 28px; }
 }
 
 @media (max-width: 640px) {
@@ -1658,8 +1859,12 @@ body.cursor-click .cursor-dot {
   .footer-brand { grid-column: auto; }
   .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
   .stats-section { padding: 48px 24px; }
+  .lookbook { padding: 64px 0 64px 24px; }
+  .lookbook-card { flex: 0 0 260px; height: 340px; }
+  .section-divider { padding: 0 24px; }
+  .back-to-top { bottom: 24px; right: 24px; width: 42px; height: 42px; }
 }
 
 @media (pointer: coarse) {
-  body, .btn, .card-btn, .t-nav-btn, .nav-hamburger, .mobile-close { cursor: auto; }
+  body, .btn, .card-btn, .t-nav-btn, .nav-hamburger, .mobile-close, .back-to-top { cursor: auto; }
 }

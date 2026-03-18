@@ -89,6 +89,13 @@
     </div>
   </section>
 
+  <!-- ── Section Divider ── -->
+  <div class="section-divider">
+    <svg viewBox="0 0 1200 2" preserveAspectRatio="none">
+      <line class="divider-line" x1="0" y1="1" x2="1200" y2="1" stroke="currentColor" stroke-width="1"/>
+    </svg>
+  </div>
+
   <!-- ═══ COLLECTION ═══ -->
   <section class="collection" id="collection">
     <div class="collection-inner">
@@ -102,6 +109,42 @@
         <% content.collection.items.forEach(function(item, i) { %>
           <article class="card">
             <div class="card-img card-img--<%= item.color %>">
+              <!-- SVG Decorative Pattern -->
+              <div class="card-svg-wrap">
+                <% if (item.color === 'green' || item.color === 'sage') { %>
+                  <svg class="card-svg" viewBox="0 0 200 200" fill="none">
+                    <circle cx="100" cy="100" r="60" stroke="rgba(245,240,232,0.08)" stroke-width="0.5"/>
+                    <circle cx="100" cy="100" r="40" stroke="rgba(245,240,232,0.06)" stroke-width="0.5"/>
+                    <path d="M100 40 Q130 70 100 100 Q70 130 100 160" stroke="rgba(168,196,181,0.15)" stroke-width="0.5" fill="none"/>
+                    <path d="M100 40 Q70 70 100 100 Q130 130 100 160" stroke="rgba(168,196,181,0.15)" stroke-width="0.5" fill="none"/>
+                    <line x1="60" y1="100" x2="140" y2="100" stroke="rgba(245,240,232,0.05)" stroke-width="0.5"/>
+                    <line x1="100" y1="60" x2="100" y2="140" stroke="rgba(245,240,232,0.05)" stroke-width="0.5"/>
+                  </svg>
+                <% } else if (item.color === 'dark') { %>
+                  <svg class="card-svg" viewBox="0 0 200 200" fill="none">
+                    <rect x="60" y="60" width="80" height="80" stroke="rgba(245,240,232,0.07)" stroke-width="0.5" transform="rotate(45 100 100)"/>
+                    <rect x="70" y="70" width="60" height="60" stroke="rgba(245,240,232,0.05)" stroke-width="0.5" transform="rotate(45 100 100)"/>
+                    <line x1="100" y1="30" x2="100" y2="170" stroke="rgba(245,240,232,0.04)" stroke-width="0.5"/>
+                    <line x1="30" y1="100" x2="170" y2="100" stroke="rgba(245,240,232,0.04)" stroke-width="0.5"/>
+                  </svg>
+                <% } else if (item.color === 'blush') { %>
+                  <svg class="card-svg" viewBox="0 0 200 200" fill="none">
+                    <circle cx="80" cy="90" r="35" stroke="rgba(28,28,26,0.06)" stroke-width="0.5"/>
+                    <circle cx="120" cy="110" r="35" stroke="rgba(28,28,26,0.06)" stroke-width="0.5"/>
+                    <path d="M65 60 Q100 40 135 60" stroke="rgba(28,28,26,0.08)" stroke-width="0.5" fill="none"/>
+                    <path d="M65 140 Q100 160 135 140" stroke="rgba(28,28,26,0.08)" stroke-width="0.5" fill="none"/>
+                  </svg>
+                <% } else { %>
+                  <svg class="card-svg" viewBox="0 0 200 200" fill="none">
+                    <ellipse cx="100" cy="100" rx="55" ry="70" stroke="rgba(245,240,232,0.07)" stroke-width="0.5"/>
+                    <path d="M100 30 L100 170" stroke="rgba(245,240,232,0.05)" stroke-width="0.5"/>
+                    <path d="M60 65 Q100 45 140 65" stroke="rgba(168,196,181,0.1)" stroke-width="0.5" fill="none"/>
+                    <path d="M60 135 Q100 155 140 135" stroke="rgba(168,196,181,0.1)" stroke-width="0.5" fill="none"/>
+                  </svg>
+                <% } %>
+              </div>
+              <!-- Wipe reveal curtain -->
+              <div class="card-wipe"></div>
               <div class="card-img-label"><%= item.meta %></div>
               <div class="card-img-overlay">
                 <p class="card-img-desc"><%= item.desc %></p>
@@ -126,6 +169,42 @@
       </div>
     </div>
   </section>
+
+  <!-- ═══ LOOKBOOK — Horizontal Scroll ═══ -->
+  <section class="lookbook" id="lookbook">
+    <div class="lookbook-header">
+      <p class="section-eyebrow"><%= content.lookbook.eyebrow %></p>
+      <h2 class="section-title"><em><%= content.lookbook.title %></em></h2>
+    </div>
+    <div class="lookbook-track-wrap">
+      <div class="lookbook-track" id="lookbook-track">
+        <% content.lookbook.items.forEach(function(item, i) { %>
+          <div class="lookbook-card lookbook-card--<%= item.color %>">
+            <div class="lookbook-card-inner">
+              <!-- Decorative SVG -->
+              <svg class="lookbook-svg" viewBox="0 0 400 500" fill="none">
+                <rect x="40" y="40" width="320" height="420" stroke="rgba(245,240,232,0.08)" stroke-width="0.5"/>
+                <line x1="200" y1="40" x2="200" y2="460" stroke="rgba(245,240,232,0.04)" stroke-width="0.5"/>
+                <circle cx="200" cy="250" r="80" stroke="rgba(168,196,181,0.06)" stroke-width="0.5"/>
+              </svg>
+              <div class="lookbook-card-content">
+                <span class="lookbook-num"><%= String(i + 1).padStart(2, '0') %></span>
+                <h3 class="lookbook-card-title"><%= item.title %></h3>
+                <span class="lookbook-season"><%= item.season %></span>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Section Divider ── -->
+  <div class="section-divider">
+    <svg viewBox="0 0 1200 2" preserveAspectRatio="none">
+      <line class="divider-line" x1="0" y1="1" x2="1200" y2="1" stroke="currentColor" stroke-width="1"/>
+    </svg>
+  </div>
 
   <!-- ═══ EDITORIAL SPLIT ═══ -->
   <section class="editorial" id="editorial">
@@ -167,17 +246,24 @@
           <% }); %>
         </div>
         <div class="testimonials-nav">
-          <button class="t-nav-btn" id="t-prev">←</button>
+          <button class="t-nav-btn" id="t-prev">&#8592;</button>
           <div class="t-dots">
             <% content.testimonials.forEach(function(_, i) { %>
               <span class="t-dot <%= i === 0 ? 'active' : '' %>" data-idx="<%= i %>"></span>
             <% }); %>
           </div>
-          <button class="t-nav-btn" id="t-next">→</button>
+          <button class="t-nav-btn" id="t-next">&#8594;</button>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- ── Section Divider ── -->
+  <div class="section-divider">
+    <svg viewBox="0 0 1200 2" preserveAspectRatio="none">
+      <line class="divider-line" x1="0" y1="1" x2="1200" y2="1" stroke="currentColor" stroke-width="1"/>
+    </svg>
+  </div>
 
   <!-- ═══ PROCESS ═══ -->
   <section class="process-section" id="story">
@@ -238,6 +324,9 @@
 </main>
 
 <%- include('partials/footer') %>
+
+<!-- Lenis Smooth Scroll -->
+<script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
 
 <!-- GSAP CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
