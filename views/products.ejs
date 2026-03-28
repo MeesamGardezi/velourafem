@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop — <%= content.brand.name %> <%= content.brand.tagScript %></title>
+  <meta name="description" content="Browse our full collection of curated clothing pieces.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Great+Vibes&family=Instrument+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/shop.css">
+</head>
+<body class="no-loader">
+<%- include('partials/nav') %>
+
+<main class="shop-main">
+  <!-- Page Header -->
+  <div class="shop-header">
+    <p class="section-eyebrow center">Our Collection</p>
+    <h1 class="shop-title">Shop <em class="script-heading">All Pieces</em></h1>
+  </div>
+
+  <!-- Filters + Search -->
+  <div class="shop-filters-bar">
+    <form class="shop-search-form" action="/products" method="GET">
+      <% if (category) { %><input type="hidden" name="category" value="<%= category %>"><% } %>
+      <% if (filter) { %><input type="hidden" name="filter" value="<%= filter %>"><% } %>
+      <div class="shop-search-input-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" name="q" value="<%= q %>" placeholder="Search pieces…" class="shop-search-input">
+      </div>
+      <button type="submit" class="btn btn-outline-sm">Search</button>
+    </form>
+
+    <div class="shop-filter-chips">
+      <a href="/products" class="filter-chip <%= (!filter && !category && !q) ? 'active' : '' %>">All</a>
+      <a href="/products?filter=new" class="filter-chip <%= filter === 'new' ? 'active' : '' %>">New Arrivals</a>
+      <a href="/products?filter=bestseller" class="filter-chip <%= filter === 'bestseller' ? 'active' : '' %>">Bestsellers</a>
+      <a href="/products?filter=archive" class="filter-chip <%= filter === 'archive' ? 'active' : '' %>">Archive</a>
+      <% categories.forEach(function(cat) { %>
+        <a href="/products?category=<%= cat %>" class="filter-chip <%= category === cat ? 'active' : '' %>"><%= cat %></a>
+      <% }); %>
+    </div>
+  </div>
+
+  <!-- Products Grid -->
+  <div class="shop-inner">
+    <% if (products.length === 0) { %>
+      <div class="shop-empty">
+        <p>No pieces found. <a href="/products">View all</a></p>
+      </div>
+    <% } else { %>
+      <div class="shop-grid">
+        <% products.forEach(function(product) { %>
+          <article class="shop-card">
+            <a href="/products/<%= product.id %>" class="shop-card-img-link">
+              <div class="shop-card-img">
+                <img src="<%= product.image %>" alt="<%= product.title %>" loading="lazy">
+                <div class="shop-card-overlay">
+                  <span class="shop-card-cta">View Details</span>
+                </div>
+                <span class="badge badge--<%= product.badgeStyle %> shop-badge"><%= product.badge %></span>
+              </div>
+            </a>
+            <div class="shop-card-body">
+              <p class="shop-card-category"><%= product.category %></p>
+              <h3 class="shop-card-title"><a href="/products/<%= product.id %>"><%= product.title %></a></h3>
+              <p class="shop-card-meta"><%= product.meta %></p>
+              <div class="shop-card-footer">
+                <span class="shop-card-price">PKR <%= product.price.toLocaleString() %></span>
+                <form action="/cart/add" method="POST">
+                  <input type="hidden" name="id" value="<%= product.id %>">
+                  <input type="hidden" name="qty" value="1">
+                  <button type="submit" class="btn-add-cart">Add to Cart</button>
+                </form>
+              </div>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  // Simple fade-in for shop cards
+  document.querySelectorAll('.shop-card').forEach((card, i) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    setTimeout(() => {
+      card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, i * 80);
+  });
+</script>
+</body>
+</html>

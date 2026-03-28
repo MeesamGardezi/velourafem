@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= product.title %> — <%= content.brand.name %></title>
+  <meta name="description" content="<%= product.desc %>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Great+Vibes&family=Instrument+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/shop.css">
+</head>
+<body class="no-loader">
+<%- include('partials/nav') %>
+
+<main class="pdp-main">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="/">Home</a>
+    <span>›</span>
+    <a href="/products">Shop</a>
+    <span>›</span>
+    <span><%= product.title %></span>
+  </nav>
+
+  <!-- Product Detail -->
+  <div class="pdp-grid">
+    <!-- Image -->
+    <div class="pdp-image-wrap">
+      <img src="<%= product.image %>" alt="<%= product.title %>" class="pdp-image">
+      <span class="badge badge--<%= product.badgeStyle %> pdp-badge"><%= product.badge %></span>
+    </div>
+
+    <!-- Info -->
+    <div class="pdp-info">
+      <p class="pdp-category"><%= product.category %></p>
+      <h1 class="pdp-title"><%= product.title %></h1>
+      <p class="pdp-meta"><%= product.meta %></p>
+      <p class="pdp-price">PKR <%= product.price.toLocaleString() %></p>
+      <p class="pdp-desc"><%= product.desc %></p>
+      <p class="pdp-details"><%= product.details %></p>
+
+      <form action="/cart/add" method="POST" class="pdp-add-form">
+        <input type="hidden" name="id" value="<%= product.id %>">
+        <div class="pdp-qty-row">
+          <label for="qty" class="pdp-qty-label">Quantity</label>
+          <div class="pdp-qty-wrap">
+            <button type="button" class="qty-btn" id="qty-minus">−</button>
+            <input type="number" name="qty" id="qty" value="1" min="1" max="10" class="qty-input">
+            <button type="button" class="qty-btn" id="qty-plus">+</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-terracotta pdp-add-btn">Add to Cart</button>
+        <a href="/cart" class="btn btn-secondary pdp-cart-link">View Cart</a>
+      </form>
+
+      <div class="pdp-meta-row">
+        <span class="pdp-stock <%= product.inStock ? 'in-stock' : 'out-stock' %>">
+          <%= product.inStock ? '✓ In Stock' : '✕ Out of Stock' %>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  <% if (related.length > 0) { %>
+    <section class="related-section">
+      <h2 class="related-title">You May Also Like</h2>
+      <div class="shop-grid related-grid">
+        <% related.forEach(function(p) { %>
+          <article class="shop-card">
+            <a href="/products/<%= p.id %>" class="shop-card-img-link">
+              <div class="shop-card-img">
+                <img src="<%= p.image %>" alt="<%= p.title %>" loading="lazy">
+                <div class="shop-card-overlay"><span class="shop-card-cta">View Details</span></div>
+                <span class="badge badge--<%= p.badgeStyle %> shop-badge"><%= p.badge %></span>
+              </div>
+            </a>
+            <div class="shop-card-body">
+              <p class="shop-card-category"><%= p.category %></p>
+              <h3 class="shop-card-title"><a href="/products/<%= p.id %>"><%= p.title %></a></h3>
+              <div class="shop-card-footer">
+                <span class="shop-card-price">PKR <%= p.price.toLocaleString() %></span>
+                <form action="/cart/add" method="POST">
+                  <input type="hidden" name="id" value="<%= p.id %>">
+                  <input type="hidden" name="qty" value="1">
+                  <button type="submit" class="btn-add-cart">Add to Cart</button>
+                </form>
+              </div>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    </section>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>
+
+<script>
+  const qtyInput = document.getElementById('qty');
+  document.getElementById('qty-minus').addEventListener('click', () => {
+    if (qtyInput.value > 1) qtyInput.value = parseInt(qtyInput.value) - 1;
+  });
+  document.getElementById('qty-plus').addEventListener('click', () => {
+    if (qtyInput.value < 10) qtyInput.value = parseInt(qtyInput.value) + 1;
+  });
+</script>
+</body>
+</html>

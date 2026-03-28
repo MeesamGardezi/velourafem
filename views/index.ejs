@@ -109,46 +109,15 @@
         <% content.collection.items.forEach(function(item, i) { %>
           <article class="card">
             <div class="card-img card-img--<%= item.color %>">
-              <!-- SVG Decorative Pattern -->
-              <div class="card-svg-wrap">
-                <% if (item.color === 'green' || item.color === 'sage') { %>
-                  <svg class="card-svg" viewBox="0 0 200 200" fill="none">
-                    <circle cx="100" cy="100" r="60" stroke="rgba(245,240,232,0.08)" stroke-width="0.5"/>
-                    <circle cx="100" cy="100" r="40" stroke="rgba(245,240,232,0.06)" stroke-width="0.5"/>
-                    <path d="M100 40 Q130 70 100 100 Q70 130 100 160" stroke="rgba(168,196,181,0.15)" stroke-width="0.5" fill="none"/>
-                    <path d="M100 40 Q70 70 100 100 Q130 130 100 160" stroke="rgba(168,196,181,0.15)" stroke-width="0.5" fill="none"/>
-                    <line x1="60" y1="100" x2="140" y2="100" stroke="rgba(245,240,232,0.05)" stroke-width="0.5"/>
-                    <line x1="100" y1="60" x2="100" y2="140" stroke="rgba(245,240,232,0.05)" stroke-width="0.5"/>
-                  </svg>
-                <% } else if (item.color === 'dark') { %>
-                  <svg class="card-svg" viewBox="0 0 200 200" fill="none">
-                    <rect x="60" y="60" width="80" height="80" stroke="rgba(245,240,232,0.07)" stroke-width="0.5" transform="rotate(45 100 100)"/>
-                    <rect x="70" y="70" width="60" height="60" stroke="rgba(245,240,232,0.05)" stroke-width="0.5" transform="rotate(45 100 100)"/>
-                    <line x1="100" y1="30" x2="100" y2="170" stroke="rgba(245,240,232,0.04)" stroke-width="0.5"/>
-                    <line x1="30" y1="100" x2="170" y2="100" stroke="rgba(245,240,232,0.04)" stroke-width="0.5"/>
-                  </svg>
-                <% } else if (item.color === 'blush') { %>
-                  <svg class="card-svg" viewBox="0 0 200 200" fill="none">
-                    <circle cx="80" cy="90" r="35" stroke="rgba(28,28,26,0.06)" stroke-width="0.5"/>
-                    <circle cx="120" cy="110" r="35" stroke="rgba(28,28,26,0.06)" stroke-width="0.5"/>
-                    <path d="M65 60 Q100 40 135 60" stroke="rgba(28,28,26,0.08)" stroke-width="0.5" fill="none"/>
-                    <path d="M65 140 Q100 160 135 140" stroke="rgba(28,28,26,0.08)" stroke-width="0.5" fill="none"/>
-                  </svg>
-                <% } else { %>
-                  <svg class="card-svg" viewBox="0 0 200 200" fill="none">
-                    <ellipse cx="100" cy="100" rx="55" ry="70" stroke="rgba(245,240,232,0.07)" stroke-width="0.5"/>
-                    <path d="M100 30 L100 170" stroke="rgba(245,240,232,0.05)" stroke-width="0.5"/>
-                    <path d="M60 65 Q100 45 140 65" stroke="rgba(168,196,181,0.1)" stroke-width="0.5" fill="none"/>
-                    <path d="M60 135 Q100 155 140 135" stroke="rgba(168,196,181,0.1)" stroke-width="0.5" fill="none"/>
-                  </svg>
-                <% } %>
-              </div>
+              <% if (item.image) { %>
+                <img src="<%= item.image %>" alt="<%= item.title %>" class="card-photo" loading="lazy">
+              <% } %>
               <!-- Wipe reveal curtain -->
               <div class="card-wipe"></div>
               <div class="card-img-label"><%= item.meta %></div>
               <div class="card-img-overlay">
                 <p class="card-img-desc"><%= item.desc %></p>
-                <a href="#" class="btn btn-ghost-sm">View Piece</a>
+                <a href="/products/<%= item.id %>" class="btn btn-ghost-sm">View Piece</a>
               </div>
             </div>
             <div class="card-body">
@@ -157,7 +126,11 @@
               <p class="card-meta"><%= item.meta %></p>
               <div class="card-footer">
                 <span class="card-price"><%= item.price %></span>
-                <button class="card-btn" aria-label="Add to wishlist">♡</button>
+                <form action="/cart/add" method="POST" style="display:inline">
+                <input type="hidden" name="id" value="<%= item.id %>">
+                <input type="hidden" name="qty" value="1">
+                <button type="submit" class="card-btn" aria-label="Add to cart" title="Add to cart">🛍</button>
+              </form>
               </div>
             </div>
           </article>
@@ -165,7 +138,7 @@
       </div>
 
       <div class="collection-cta">
-        <a href="#" class="btn btn-secondary">View Full Collection</a>
+        <a href="/products" class="btn btn-secondary">View Full Collection</a>
       </div>
     </div>
   </section>

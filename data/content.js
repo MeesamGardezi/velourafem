@@ -1,16 +1,16 @@
 module.exports = {
   brand: {
-    name: 'VELOURA',
-    tagScript: 'Fem',
-    tagline: 'Soft Power, Refined Always',
+    name: 'PAKNITS',
+    tagScript: '',
+    tagline: 'Style Defined, Quality Delivered',
     established: '2026',
-    description: 'Quiet luxury, editorial elegance, and intentional design.',
+    description: 'Modern fashion for the discerning individual.',
   },
 
   nav: [
+    { label: 'Shop', href: '/products' },
     { label: 'Collection', href: '#collection' },
     { label: 'Philosophy', href: '#philosophy' },
-    { label: 'Editorial', href: '#editorial' },
     { label: 'Story', href: '#story' },
     { label: 'Contact', href: '#contact' },
   ],
@@ -76,51 +76,69 @@ module.exports = {
     subtitle: 'Each piece is a statement — not of wealth, but of discernment.',
     items: [
       {
+        id: 1,
         title: 'Velvet Drape',
         meta: 'Emerald · Bespoke',
         price: 'PKR 24,500',
+        priceNum: 24500,
         badge: { label: 'New Arrival', style: 'green' },
         color: 'green',
+        image: 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=600&h=750&fit=crop',
         desc: 'Sculptural silhouette, hand-finished edges, forest-green velvet.',
       },
       {
+        id: 2,
         title: 'Elysian Cape',
         meta: 'Ivory · Limited Edition',
         price: 'PKR 38,000',
+        priceNum: 38000,
         badge: { label: 'Limited', style: 'terracotta' },
         color: 'sage',
+        image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&h=750&fit=crop',
         desc: 'A cape that commands the room. Ivory silk. Twelve pieces only.',
       },
       {
-        title: 'The Founder\'s Set',
+        id: 3,
+        title: "The Founder's Set",
         meta: 'Curated · Archive',
         price: 'PKR 12,900',
+        priceNum: 12900,
         badge: { label: 'Archive', style: 'muted' },
         color: 'taupe',
-        desc: 'The original trinity. Where Veloura Fem began its quiet revolution.',
+        image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&h=750&fit=crop',
+        desc: 'The original trinity. Where paknits began its quiet revolution.',
       },
       {
+        id: 4,
         title: 'Obsidian Line',
         meta: 'Noir · Signature',
         price: 'PKR 52,000',
+        priceNum: 52000,
         badge: { label: 'Signature', style: 'green' },
         color: 'dark',
+        image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&h=750&fit=crop',
         desc: 'Deep charcoal, structured shoulders, uncompromising confidence.',
       },
       {
+        id: 5,
         title: 'Blush Ritual',
         meta: 'Dusty Rose · Soft',
         price: 'PKR 18,700',
+        priceNum: 18700,
         badge: { label: 'Bestseller', style: 'terracotta' },
         color: 'blush',
+        image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&h=750&fit=crop',
         desc: 'The balance of strength and softness captured in dusty rose.',
       },
       {
+        id: 6,
         title: 'Celadon Story',
         meta: 'Sage · Ethereal',
         price: 'PKR 29,000',
+        priceNum: 29000,
         badge: { label: 'New', style: 'muted' },
         color: 'celadon',
+        image: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&h=750&fit=crop',
         desc: 'Sage-toned layers that move with intention. Morning light in textile form.',
       },
     ],
@@ -128,7 +146,7 @@ module.exports = {
 
   testimonials: [
     {
-      quote: 'I put on a Veloura piece and I don\'t need to say a word. The room understands.',
+      quote: 'I put on a paknits piece and I don\'t need to say a word. The room understands.',
       author: 'Nadia R.',
       title: 'Creative Director, Karachi',
     },
@@ -158,9 +176,9 @@ module.exports = {
 
   editorial: {
     eyebrow: 'Brand Voice',
-    quote: '"She does not chase trends. She sets the standard."',
-    cite: '— Veloura Fem',
-    body: 'Born from a belief that true elegance is never announced — it is simply felt. Veloura Fem exists for the woman who has always known exactly who she is.',
+    quote: '"Style is not what you wear. It is how you wear it."',
+    cite: '— paknits',
+    body: 'Born from a belief that true elegance is never announced — it is simply felt. paknits exists for those who have always known exactly who they are.',
   },
 
   process: {
@@ -186,33 +204,33 @@ module.exports = {
   footer: {
     columns: [
       {
-        heading: 'Explore',
+        heading: 'Shop',
         links: [
-          { label: 'Collection', href: '#' },
-          { label: 'Lookbook', href: '#' },
-          { label: 'New Arrivals', href: '#' },
-          { label: 'Archive', href: '#' },
+          { label: 'All Products', href: '/products' },
+          { label: 'New Arrivals', href: '/products?filter=new' },
+          { label: 'Bestsellers', href: '/products?filter=bestseller' },
+          { label: 'Archive', href: '/products?filter=archive' },
         ],
       },
       {
         heading: 'Brand',
         links: [
-          { label: 'Our Story', href: '#' },
-          { label: 'Philosophy', href: '#' },
-          { label: 'Design System', href: '#' },
+          { label: 'Our Story', href: '#story' },
+          { label: 'Philosophy', href: '#philosophy' },
           { label: 'Press', href: '#' },
+          { label: 'Careers', href: '#' },
         ],
       },
       {
-        heading: 'Connect',
+        heading: 'Help',
         links: [
-          { label: 'Instagram', href: '#' },
-          { label: 'Pinterest', href: '#' },
-          { label: 'Contact', href: '#' },
-          { label: 'Stockists', href: '#' },
+          { label: 'Cart', href: '/cart' },
+          { label: 'Contact', href: '#contact' },
+          { label: 'Shipping Info', href: '#' },
+          { label: 'Returns', href: '#' },
         ],
       },
     ],
-    legal: '© 2026 Veloura Fem. All rights reserved.',
+    legal: '© 2026 paknits All rights reserved.',
   },
 };
