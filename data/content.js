@@ -1,7 +1,7 @@
 module.exports = {
   brand: {
-    name: 'CLOTHING',
-    tagScript: 'Co.',
+    name: 'PAKNITS',
+    tagScript: '',
     tagline: 'Style Defined, Quality Delivered',
     established: '2026',
     description: 'Modern fashion for the discerning individual.',
@@ -106,7 +106,7 @@ module.exports = {
         badge: { label: 'Archive', style: 'muted' },
         color: 'taupe',
         image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&h=750&fit=crop',
-        desc: 'The original trinity. Where Clothing Co. began its quiet revolution.',
+        desc: 'The original trinity. Where paknits began its quiet revolution.',
       },
       {
         id: 4,
@@ -146,7 +146,7 @@ module.exports = {
 
   testimonials: [
     {
-      quote: 'I put on a Clothing piece and I don\'t need to say a word. The room understands.',
+      quote: 'I put on a paknits piece and I don\'t need to say a word. The room understands.',
       author: 'Nadia R.',
       title: 'Creative Director, Karachi',
     },
@@ -177,8 +177,8 @@ module.exports = {
   editorial: {
     eyebrow: 'Brand Voice',
     quote: '"Style is not what you wear. It is how you wear it."',
-    cite: '— Clothing Co.',
-    body: 'Born from a belief that true elegance is never announced — it is simply felt. Clothing Co. exists for those who have always known exactly who they are.',
+    cite: '— paknits',
+    body: 'Born from a belief that true elegance is never announced — it is simply felt. paknits exists for those who have always known exactly who they are.',
   },
 
   process: {
@@ -231,6 +231,6 @@ module.exports = {
         ],
       },
     ],
-    legal: '© 2026 Clothing Co. All rights reserved.',
+    legal: '© 2026 paknits All rights reserved.',
   },
 };
