@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalogues — Admin — Clothing Co.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Instrument+Sans:wght@0,400;0,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body no-loader">
+  <% const activePage = 'catalogues'; %>
+  <%- include('../partials/admin-nav') %>
+
+  <div class="admin-content">
+    <div class="admin-page-header">
+      <div>
+        <h1 class="admin-page-title">Catalogues</h1>
+        <p class="admin-page-sub">Upload and manage product catalogues (PDF, images)</p>
+      </div>
+    </div>
+
+    <% if (success) { %>
+      <div class="admin-success"><%= success %></div>
+    <% } %>
+    <% if (error) { %>
+      <div class="admin-error"><%= error %></div>
+    <% } %>
+
+    <!-- Upload Form -->
+    <div class="admin-catalogue-upload">
+      <h2 class="admin-form-section-title">Upload New Catalogue</h2>
+      <form action="/admin/catalogues/upload" method="POST" enctype="multipart/form-data" class="admin-upload-form">
+        <div class="admin-upload-zone" id="upload-zone">
+          <div class="admin-upload-icon">📤</div>
+          <p class="admin-upload-text">Drag & drop or click to upload</p>
+          <p class="admin-upload-hint">PDF, JPG, PNG — Max 50MB</p>
+          <input type="file" id="catalogue-file" name="catalogue" accept=".pdf,image/*" required class="admin-file-input-hidden">
+        </div>
+        <div class="admin-upload-name-row">
+          <div class="form-group" style="flex:1">
+            <label for="cat-name">Catalogue Name</label>
+            <input type="text" id="cat-name" name="name" placeholder="e.g. Spring/Summer 2026 Collection">
+          </div>
+          <button type="submit" class="btn btn-terracotta admin-upload-btn">Upload</button>
+        </div>
+        <p id="selected-file-name" class="admin-selected-file"></p>
+      </form>
+    </div>
+
+    <!-- Existing Catalogues -->
+    <div class="admin-catalogues-list">
+      <h2 class="admin-form-section-title">Uploaded Catalogues</h2>
+
+      <% if (catalogues.length === 0) { %>
+        <div class="admin-empty-state">
+          <span class="admin-empty-icon">📂</span>
+          <p>No catalogues uploaded yet.</p>
+        </div>
+      <% } else { %>
+        <div class="admin-catalogue-grid">
+          <% catalogues.forEach(function(cat) { %>
+            <div class="admin-catalogue-card">
+              <div class="admin-catalogue-icon">
+                <% const isPDF = cat.filename.toLowerCase().endsWith('.pdf'); %>
+                <%= isPDF ? '📄' : '🖼' %>
+              </div>
+              <div class="admin-catalogue-info">
+                <p class="admin-catalogue-name"><%= cat.name %></p>
+                <p class="admin-catalogue-meta">
+                  <%= (cat.size / 1024 / 1024).toFixed(2) %> MB ·
+                  <%= new Date(cat.uploadedAt).toLocaleDateString('en-PK', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                </p>
+              </div>
+              <div class="admin-catalogue-actions">
+                <a href="<%= cat.url %>" target="_blank" class="admin-btn-edit">View</a>
+                <a href="<%= cat.url %>" download class="admin-btn-edit">Download</a>
+                <form action="/admin/catalogues/<%= cat.id %>/delete" method="POST" style="display:inline" onsubmit="return confirm('Delete this catalogue?')">
+                  <button type="submit" class="admin-btn-delete">Delete</button>
+                </form>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+<script>
+  const zone = document.getElementById('upload-zone');
+  const fileInput = document.getElementById('catalogue-file');
+  const fileNameDisplay = document.getElementById('selected-file-name');
+
+  zone.addEventListener('click', () => fileInput.click());
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+      fileNameDisplay.textContent = '📎 ' + e.dataTransfer.files[0].name;
+    }
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) {
+      fileNameDisplay.textContent = '📎 ' + fileInput.files[0].name;
+    }
+  });
+</script>
+</body>
+</html>

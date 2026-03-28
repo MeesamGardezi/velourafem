@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products — Admin — Clothing Co.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Instrument+Sans:wght@0,400;0,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body no-loader">
+  <% const activePage = 'products'; %>
+  <%- include('../partials/admin-nav') %>
+
+  <div class="admin-content">
+    <div class="admin-page-header">
+      <div>
+        <h1 class="admin-page-title">Products</h1>
+        <p class="admin-page-sub"><%= products.length %> total products</p>
+      </div>
+      <a href="/admin/products/new" class="btn btn-terracotta">+ Add Product</a>
+    </div>
+
+    <% if (success) { %>
+      <div class="admin-success"><%= success %></div>
+    <% } %>
+    <% if (error) { %>
+      <div class="admin-error"><%= error %></div>
+    <% } %>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Badge</th>
+            <th>Featured</th>
+            <th>Stock</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (products.length === 0) { %>
+            <tr><td colspan="8" class="admin-empty-row">No products yet. <a href="/admin/products/new">Add one →</a></td></tr>
+          <% } else { %>
+            <% products.forEach(function(p) { %>
+              <tr>
+                <td><img src="<%= p.image %>" alt="<%= p.title %>" class="admin-table-img"></td>
+                <td class="admin-table-title"><strong><%= p.title %></strong><br><small class="admin-table-meta"><%= p.meta %></small></td>
+                <td><span class="admin-tag"><%= p.category %></span></td>
+                <td>PKR <%= p.price.toLocaleString() %></td>
+                <td><span class="badge badge--<%= p.badgeStyle %>"><%= p.badge %></span></td>
+                <td>
+                  <span class="admin-bool-<%= p.featured ? 'yes' : 'no' %>">
+                    <%= p.featured ? '★ Yes' : '— No' %>
+                  </span>
+                </td>
+                <td>
+                  <span class="admin-stock-badge admin-stock-<%= p.inStock ? 'in' : 'out' %>">
+                    <%= p.inStock ? 'In Stock' : 'Out of Stock' %>
+                  </span>
+                </td>
+                <td class="admin-actions">
+                  <a href="/admin/products/<%= p.id %>/edit" class="admin-btn-edit">Edit</a>
+                  <form action="/admin/products/<%= p.id %>/delete" method="POST" style="display:inline" onsubmit="return confirm('Delete \'<%= p.title %>\'?')">
+                    <button type="submit" class="admin-btn-delete">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

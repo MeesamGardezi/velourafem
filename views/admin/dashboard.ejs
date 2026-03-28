@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Clothing Co.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Instrument+Sans:wght@0,400;0,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body no-loader">
+  <%- include('../partials/admin-nav') %>
+
+  <div class="admin-content">
+    <div class="admin-page-header">
+      <h1 class="admin-page-title">Dashboard</h1>
+      <p class="admin-page-sub">Welcome back to Clothing Co. Admin</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="admin-stats-grid">
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">👗</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= products.length %></span>
+          <span class="admin-stat-label">Total Products</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">📄</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= catalogues.length %></span>
+          <span class="admin-stat-label">Catalogues Uploaded</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">⭐</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= products.filter(p => p.featured).length %></span>
+          <span class="admin-stat-label">Featured Products</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">✓</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= products.filter(p => p.inStock).length %></span>
+          <span class="admin-stat-label">In Stock</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="admin-quick-links">
+      <h2 class="admin-section-title">Quick Actions</h2>
+      <div class="admin-quick-grid">
+        <a href="/admin/products/new" class="admin-quick-card">
+          <span class="admin-quick-icon">➕</span>
+          <span>Add New Product</span>
+        </a>
+        <a href="/admin/catalogues" class="admin-quick-card">
+          <span class="admin-quick-icon">📤</span>
+          <span>Upload Catalogue</span>
+        </a>
+        <a href="/products" class="admin-quick-card" target="_blank">
+          <span class="admin-quick-icon">🛍</span>
+          <span>View Shop</span>
+        </a>
+        <a href="/" class="admin-quick-card" target="_blank">
+          <span class="admin-quick-icon">🌐</span>
+          <span>View Website</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Recent Products -->
+    <div class="admin-recent">
+      <div class="admin-section-header">
+        <h2 class="admin-section-title">Recent Products</h2>
+        <a href="/admin/products" class="admin-view-all">View All →</a>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% products.slice(0, 5).forEach(function(p) { %>
+              <tr>
+                <td><img src="<%= p.image %>" alt="<%= p.title %>" class="admin-table-img"></td>
+                <td class="admin-table-title"><%= p.title %></td>
+                <td><span class="admin-tag"><%= p.category %></span></td>
+                <td>PKR <%= p.price.toLocaleString() %></td>
+                <td>
+                  <span class="admin-stock-badge admin-stock-<%= p.inStock ? 'in' : 'out' %>">
+                    <%= p.inStock ? 'In Stock' : 'Out of Stock' %>
+                  </span>
+                </td>
+                <td class="admin-actions">
+                  <a href="/admin/products/<%= p.id %>/edit" class="admin-btn-edit">Edit</a>
+                  <form action="/admin/products/<%= p.id %>/delete" method="POST" style="display:inline" onsubmit="return confirm('Delete this product?')">
+                    <button type="submit" class="admin-btn-delete">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

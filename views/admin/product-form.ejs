@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= product ? 'Edit' : 'Add' %> Product — Admin — Clothing Co.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Instrument+Sans:wght@0,400;0,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body no-loader">
+  <% const activePage = 'products'; %>
+  <%- include('../partials/admin-nav') %>
+
+  <div class="admin-content">
+    <div class="admin-page-header">
+      <div>
+        <h1 class="admin-page-title"><%= product ? 'Edit Product' : 'Add New Product' %></h1>
+        <p class="admin-page-sub"><%= product ? 'Update product details' : 'Fill in the details to list a new product' %></p>
+      </div>
+      <a href="/admin/products" class="btn btn-secondary">← Back to Products</a>
+    </div>
+
+    <% if (error) { %>
+      <div class="admin-error"><%= error %></div>
+    <% } %>
+
+    <form
+      action="/admin/products/<%= product ? product.id + '/edit' : 'new' %>"
+      method="POST"
+      enctype="multipart/form-data"
+      class="admin-form"
+    >
+      <div class="admin-form-grid">
+        <!-- Left Column -->
+        <div class="admin-form-col">
+          <div class="admin-form-section">
+            <h2 class="admin-form-section-title">Basic Information</h2>
+
+            <div class="form-group">
+              <label for="title">Product Title <span class="required">*</span></label>
+              <input type="text" id="title" name="title" required value="<%= product ? product.title : '' %>" placeholder="e.g. Velvet Drape">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                  <% ['Dresses', 'Tops', 'Outerwear', 'Sets', 'Bottoms', 'Accessories'].forEach(function(cat) { %>
+                    <option value="<%= cat %>" <%= product && product.category === cat ? 'selected' : '' %>><%= cat %></option>
+                  <% }); %>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="price">Price (PKR) <span class="required">*</span></label>
+                <input type="number" id="price" name="price" required min="0" step="0.01" value="<%= product ? product.price : '' %>" placeholder="24500">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="meta">Meta Line</label>
+              <input type="text" id="meta" name="meta" value="<%= product ? product.meta : '' %>" placeholder="e.g. Emerald · Bespoke">
+            </div>
+
+            <div class="form-group">
+              <label for="desc">Short Description</label>
+              <textarea id="desc" name="desc" rows="3" placeholder="Brief description shown on cards…"><%= product ? product.desc : '' %></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="details">Full Details</label>
+              <textarea id="details" name="details" rows="4" placeholder="Materials, care instructions, sizing…"><%= product ? product.details : '' %></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="admin-form-col">
+          <div class="admin-form-section">
+            <h2 class="admin-form-section-title">Image & Display</h2>
+
+            <div class="form-group">
+              <label for="image">Product Image</label>
+              <% if (product && product.image) { %>
+                <div class="admin-current-img">
+                  <img src="<%= product.image %>" alt="Current image" class="admin-preview-img">
+                  <p class="admin-current-img-note">Current image — upload a new one to replace</p>
+                </div>
+              <% } %>
+              <input type="file" id="image" name="image" accept="image/*" class="admin-file-input">
+              <p class="form-hint">JPG, PNG, WebP. Max 10MB. Leave blank to keep existing.</p>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="badge">Badge Label</label>
+                <input type="text" id="badge" name="badge" value="<%= product ? product.badge : '' %>" placeholder="e.g. New Arrival">
+              </div>
+              <div class="form-group">
+                <label for="badgeStyle">Badge Color</label>
+                <select id="badgeStyle" name="badgeStyle">
+                  <% ['green', 'terracotta', 'muted'].forEach(function(s) { %>
+                    <option value="<%= s %>" <%= product && product.badgeStyle === s ? 'selected' : '' %>><%= s %></option>
+                  <% }); %>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="color">Card Color Theme</label>
+              <select id="color" name="color">
+                <% ['green', 'sage', 'taupe', 'dark', 'blush', 'celadon'].forEach(function(c) { %>
+                  <option value="<%= c %>" <%= product && product.color === c ? 'selected' : '' %>><%= c %></option>
+                <% }); %>
+              </select>
+            </div>
+          </div>
+
+          <div class="admin-form-section">
+            <h2 class="admin-form-section-title">Status</h2>
+            <div class="admin-toggle-row">
+              <label class="admin-toggle-label" for="inStock">In Stock</label>
+              <label class="admin-toggle">
+                <input type="checkbox" id="inStock" name="inStock" <%= !product || product.inStock ? 'checked' : '' %>>
+                <span class="admin-toggle-slider"></span>
+              </label>
+            </div>
+            <div class="admin-toggle-row">
+              <label class="admin-toggle-label" for="featured">Featured on Homepage</label>
+              <label class="admin-toggle">
+                <input type="checkbox" id="featured" name="featured" <%= product && product.featured ? 'checked' : '' %>>
+                <span class="admin-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-form-actions">
+        <button type="submit" class="btn btn-terracotta admin-save-btn">
+          <%= product ? 'Save Changes' : 'Add Product' %>
+        </button>
+        <a href="/admin/products" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
