@@ -1,0 +1,65 @@
+<button class="admin-sidebar-toggle" id="admin-sidebar-toggle" aria-label="Toggle menu">
+  <span></span><span></span><span></span>
+</button>
+<div class="admin-sidebar-overlay" id="admin-sidebar-overlay"></div>
+
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <div class="admin-sidebar-brand">
+      <span class="nav-logo-text" style="font-size:1.1rem">PAKNITS</span>
+      <span class="admin-sidebar-label">Admin</span>
+    </div>
+    <nav class="admin-nav">
+      <a href="/admin" class="admin-nav-link <%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'active' : '' %>">
+        Dashboard
+      </a>
+      <a href="/admin/products" class="admin-nav-link <%= typeof activePage !== 'undefined' && activePage === 'products' ? 'active' : '' %>">
+        Products
+      </a>
+      <a href="/admin/products/new" class="admin-nav-link">
+        Add Product
+      </a>
+      <a href="/admin/catalogues" class="admin-nav-link <%= typeof activePage !== 'undefined' && activePage === 'catalogues' ? 'active' : '' %>">
+        Catalogues
+      </a>
+      <a href="/admin/brands" class="admin-nav-link <%= typeof activePage !== 'undefined' && activePage === 'brands' ? 'active' : '' %>">
+        Brands
+      </a>
+      <a href="/admin/orders" class="admin-nav-link <%= typeof activePage !== 'undefined' && activePage === 'orders' ? 'active' : '' %>">
+        Orders
+      </a>
+      <a href="/admin/pricing" class="admin-nav-link <%= typeof activePage !== 'undefined' && activePage === 'pricing' ? 'active' : '' %>">
+        Pricing & Delivery
+      </a>
+      <div class="admin-nav-divider"></div>
+      <a href="/" target="_blank" class="admin-nav-link">View Site</a>
+      <a href="/products" target="_blank" class="admin-nav-link">View Shop</a>
+      <div class="admin-nav-divider"></div>
+      <a href="/admin/logout" class="admin-nav-link admin-nav-logout">Logout</a>
+    </nav>
+  </aside>
+
+<script>
+(function() {
+  const toggle = document.getElementById('admin-sidebar-toggle');
+  const sidebar = document.getElementById('admin-sidebar');
+  const overlay = document.getElementById('admin-sidebar-overlay');
+  if (!toggle || !sidebar) return;
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('visible');
+    overlay.style.display = 'block';
+    requestAnimationFrame(() => overlay.style.opacity = '1');
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.classList.remove('visible'); overlay.style.display = 'none'; }, 300);
+  }
+
+  toggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+  overlay.addEventListener('click', closeSidebar);
+})();
+</script>

@@ -1,0 +1,134 @@
+<% const pageTitle = 'Cart — ' + content.brand.name; %>
+<% const pageDescription = 'Review your selections before checkout.'; %>
+<%- include('partials/shop-head') %>
+
+<%- include('partials/nav') %>
+
+<main class="cart-main">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb shop-breadcrumb">
+    <a href="/">Home</a>
+    <span class="breadcrumb-sep">
+      <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l4 4-4 4"/></svg>
+    </span>
+    <span class="breadcrumb-current">Cart</span>
+  </nav>
+
+  <div class="cart-inner">
+    <div class="cart-header">
+      <p class="section-eyebrow">Your Selection</p>
+      <h1 class="cart-title">Shopping <em class="script-heading">Cart</em></h1>
+      <% if (items.length > 0) { %>
+        <p class="cart-count-text"><%= items.reduce((s,i) => s + i.qty, 0) %> piece<%= items.reduce((s,i) => s + i.qty, 0) === 1 ? '' : 's' %> in your cart</p>
+      <% } %>
+    </div>
+
+    <% if (items.length === 0) { %>
+      <div class="cart-empty">
+        <div class="cart-empty-illustration">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--sand-beige)" stroke-width="0.8">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+        </div>
+        <p class="cart-empty-title">Your cart is empty</p>
+        <p class="cart-empty-text">Discover something extraordinary in our collection.</p>
+        <a href="/products" class="btn btn-terracotta">Browse Collection</a>
+      </div>
+    <% } else { %>
+      <div class="cart-layout">
+        <!-- Cart Items -->
+        <div class="cart-items">
+          <% items.forEach(function(item) { %>
+            <div class="cart-item">
+              <a href="/products/<%= item.id %>" class="cart-item-img-link">
+                <img src="<%= item.image %>" alt="<%= item.title %>" class="cart-item-img">
+              </a>
+              <div class="cart-item-info">
+                <span class="cart-item-category"><%= item.category %></span>
+                <h3 class="cart-item-title"><a href="/products/<%= item.id %>"><%= item.title %></a></h3>
+                <p class="cart-item-meta"><%= item.meta %></p>
+                <p class="cart-item-unit-price"><%= priceUsd(item.price) %> each</p>
+
+                <div class="cart-item-actions">
+                  <form action="/cart/update" method="POST" class="cart-qty-form">
+                    <input type="hidden" name="id" value="<%= item.id %>">
+                    <button type="button" class="qty-btn qty-minus-btn">−</button>
+                    <input type="number" name="qty" value="<%= item.qty %>" min="1" max="10" class="qty-input cart-qty-input" data-id="<%= item.id %>">
+                    <button type="button" class="qty-btn qty-plus-btn">+</button>
+                    <button type="submit" class="cart-update-btn">Update</button>
+                  </form>
+                  <form action="/cart/remove" method="POST">
+                    <input type="hidden" name="id" value="<%= item.id %>">
+                    <button type="submit" class="cart-remove-btn">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                      Remove
+                    </button>
+                  </form>
+                </div>
+              </div>
+              <div class="cart-item-price">
+                <%= priceUsd(item.price * item.qty) %>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="cart-summary">
+          <h2 class="cart-summary-title">Order Summary</h2>
+
+          <!-- Country Selector -->
+          <% const enabledCountries = pricing.countries.filter(c => c.enabled); %>
+          <% if (enabledCountries.length > 0) { %>
+            <form action="/cart/country" method="POST" class="cart-country-form">
+              <input type="hidden" name="returnTo" value="/cart">
+              <label for="country" class="cart-country-label">Shipping to</label>
+              <select name="country" id="country" class="cart-country-select" onchange="this.form.submit()">
+                <option value="">Default</option>
+                <% enabledCountries.forEach(function(c) { %>
+                  <option value="<%= c.code %>" <%= selectedCountry === c.code ? 'selected' : '' %>>
+                    <%= c.name %> (<%= c.currency %>)
+                  </option>
+                <% }); %>
+              </select>
+            </form>
+          <% } %>
+
+          <div class="cart-summary-row">
+            <span>Subtotal (<%= items.reduce((s,i) => s + i.qty, 0) %> items)</span>
+            <span><%= usd(totals.markedUpTotal) %></span>
+          </div>
+          <div class="cart-summary-row">
+            <span>Shipping<%= totals.countryName ? ' to ' + totals.countryName : '' %></span>
+            <% if (totals.delivery > 0) { %>
+              <span><%= usd(totals.delivery) %></span>
+            <% } else { %>
+              <span class="cart-free-shipping">Free</span>
+            <% } %>
+          </div>
+          <div class="cart-summary-divider"></div>
+          <div class="cart-summary-row cart-summary-total">
+            <span>Total</span>
+            <span><%= usd(totals.total) %></span>
+          </div>
+
+          <a href="/checkout" class="btn btn-terracotta cart-checkout-btn">Proceed to Checkout</a>
+          <a href="/products" class="cart-continue-link">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2L4 7l6 5"/></svg>
+            Continue Shopping
+          </a>
+
+          <div class="cart-trust-row">
+            <span>🔒 Secure Checkout</span>
+            <span>📦 Free Shipping</span>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/shop-foot') %>

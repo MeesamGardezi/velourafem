@@ -1,0 +1,194 @@
+<% const pageTitle = brand.name + ' — ' + content.brand.name; %>
+<% const pageDescription = brand.description || 'Shop products from ' + brand.name; %>
+<%- include('partials/shop-head') %>
+
+<%- include('partials/nav') %>
+
+<main class="shop-main">
+  <!-- Breadcrumb -->
+  <% const sep = '<span class="breadcrumb-sep"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l4 4-4 4"/></svg></span>'; %>
+  <% const activeFilter = category || productType || fabric || tag || ''; %>
+  <nav class="breadcrumb shop-breadcrumb">
+    <a href="/">Home</a>
+    <%- sep %>
+    <% if (activeFilter) { %>
+      <a href="/brands/<%= brand.id %>"><%= brand.name %></a>
+      <%- sep %>
+      <span class="breadcrumb-current"><%= activeFilter %></span>
+    <% } else { %>
+      <span class="breadcrumb-current"><%= brand.name %></span>
+    <% } %>
+  </nav>
+
+  <!-- Brand Hero -->
+  <section class="brand-hero">
+    <% if (brand.logo) { %>
+      <div class="brand-hero-banner">
+        <img src="<%= brand.logo %>" alt="<%= brand.name %>" loading="eager">
+      </div>
+    <% } %>
+    <div class="brand-hero-info">
+      <h1 class="brand-hero-title"><%= brand.name %></h1>
+      <% if (brand.description) { %>
+        <p class="brand-hero-desc"><%= brand.description %></p>
+      <% } %>
+      <p class="brand-hero-count"><%= products.length %> product<%= products.length !== 1 ? 's' : '' %></p>
+    </div>
+  </section>
+
+  <!-- Filters -->
+  <div class="shop-filters-bar">
+    <div class="shop-filters-inner">
+      <div class="shop-filter-chips">
+        <a href="/brands/<%= brand.id %>" class="filter-chip <%= (!category && !productType && !fabric && !tag && !q) ? 'active' : '' %>">All</a>
+
+        <% if (categories.length > 1) { %>
+          <span class="filter-chip-divider">|</span>
+          <% categories.forEach(function(cat) { %>
+            <a href="/brands/<%= brand.id %>?category=<%= encodeURIComponent(cat) %>" class="filter-chip <%= category === cat ? 'active' : '' %>"><%= cat %></a>
+          <% }); %>
+        <% } %>
+
+        <% if (productTypes.length > 1) { %>
+          <span class="filter-chip-divider">|</span>
+          <% productTypes.forEach(function(pt) { %>
+            <a href="/brands/<%= brand.id %>?productType=<%= encodeURIComponent(pt) %>" class="filter-chip <%= productType === pt ? 'active' : '' %>"><%= pt %></a>
+          <% }); %>
+        <% } %>
+
+        <% if (fabrics.length > 1) { %>
+          <span class="filter-chip-divider">|</span>
+          <% fabrics.forEach(function(f) { %>
+            <a href="/brands/<%= brand.id %>?fabric=<%= encodeURIComponent(f) %>" class="filter-chip <%= fabric === f ? 'active' : '' %>"><%= f %></a>
+          <% }); %>
+        <% } %>
+
+        <% if (typeof allTags !== 'undefined' && allTags.length > 1) { %>
+          <span class="filter-chip-divider">|</span>
+          <% allTags.forEach(function(t) { %>
+            <a href="/brands/<%= brand.id %>?tag=<%= encodeURIComponent(t) %>" class="filter-chip filter-chip--tag <%= tag === t ? 'active' : '' %>"><%= t %></a>
+          <% }); %>
+        <% } %>
+      </div>
+
+      <div class="shop-filter-row">
+        <!-- Sort -->
+        <div class="shop-sort-wrap">
+          <select class="shop-sort-select" onchange="window.location = this.value">
+            <option value="/brands/<%= brand.id %>" <%= !sort ? 'selected' : '' %>>Sort by</option>
+            <option value="/brands/<%= brand.id %>?sort=price-asc<%= category ? '&category='+encodeURIComponent(category) : '' %><%= productType ? '&productType='+encodeURIComponent(productType) : '' %>" <%= sort === 'price-asc' ? 'selected' : '' %>>Price: Low → High</option>
+            <option value="/brands/<%= brand.id %>?sort=price-desc<%= category ? '&category='+encodeURIComponent(category) : '' %><%= productType ? '&productType='+encodeURIComponent(productType) : '' %>" <%= sort === 'price-desc' ? 'selected' : '' %>>Price: High → Low</option>
+            <option value="/brands/<%= brand.id %>?sort=newest<%= category ? '&category='+encodeURIComponent(category) : '' %><%= productType ? '&productType='+encodeURIComponent(productType) : '' %>" <%= sort === 'newest' ? 'selected' : '' %>>Newest First</option>
+          </select>
+        </div>
+
+        <!-- Search -->
+        <form class="shop-search-form" action="/brands/<%= brand.id %>" method="GET">
+          <% if (category) { %><input type="hidden" name="category" value="<%= category %>"><% } %>
+          <% if (productType) { %><input type="hidden" name="productType" value="<%= productType %>"><% } %>
+          <% if (fabric) { %><input type="hidden" name="fabric" value="<%= fabric %>"><% } %>
+          <% if (sort) { %><input type="hidden" name="sort" value="<%= sort %>"><% } %>
+          <% if (tag) { %><input type="hidden" name="tag" value="<%= tag %>"><% } %>
+          <div class="shop-search-input-wrap">
+            <input type="text" name="q" value="<%= q %>" placeholder="Search in <%= brand.name %>…" class="shop-search-input">
+            <button type="submit" class="shop-search-btn" aria-label="Search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Grid -->
+  <div class="shop-inner">
+    <% if (products.length === 0) { %>
+      <div class="shop-empty">
+        <div class="shop-empty-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--warm-taupe)" stroke-width="1"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </div>
+        <p class="shop-empty-title">No products found</p>
+        <p class="shop-empty-text">Try adjusting your filters or search terms.</p>
+        <a href="/brands/<%= brand.id %>" class="btn btn-secondary">View All from <%= brand.name %></a>
+      </div>
+    <% } else { %>
+      <div class="shop-grid">
+        <% products.forEach(function(product) { %>
+          <article class="shop-card">
+            <a href="/products/<%= product.id %>" class="shop-card-img-link">
+              <div class="shop-card-img">
+                <img src="<%= product.image %>" alt="<%= product.title %>" loading="lazy">
+                <% if (product.badge) { %>
+                  <span class="badge badge--<%= product.badgeStyle %> shop-badge"><%= product.badge %></span>
+                <% } %>
+              </div>
+            </a>
+            <div class="shop-card-body">
+              <p class="shop-card-category"><%= product.category %><% if (product.productType) { %> · <%= product.productType %><% } %></p>
+              <h3 class="shop-card-title"><a href="/products/<%= product.id %>"><%= product.title %></a></h3>
+              <% if (product.tags && product.tags.length) { %>
+                <div class="shop-card-tags">
+                  <% product.tags.slice(0, 3).forEach(function(t) { %>
+                    <span class="shop-card-tag"><%= t %></span>
+                  <% }); %>
+                </div>
+              <% } %>
+              <% if (product.fabric) { %>
+                <p class="shop-card-meta"><%= product.fabric %></p>
+              <% } %>
+              <div class="shop-card-footer">
+                <span class="shop-card-price"><%= priceUsd(product.price) %></span>
+                <form action="/cart/add" method="POST">
+                  <input type="hidden" name="id" value="<%= product.id %>">
+                  <input type="hidden" name="qty" value="1">
+                  <button type="submit" class="btn-add-cart">Add to Cart</button>
+                </form>
+              </div>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+
+      <% if (totalPages > 1) { %>
+      <nav class="pagination">
+        <% const params = new URLSearchParams(); %>
+        <% if (category) params.set('category', category); %>
+        <% if (productType) params.set('productType', productType); %>
+        <% if (fabric) params.set('fabric', fabric); %>
+        <% if (tag) params.set('tag', tag); %>
+        <% if (sort) params.set('sort', sort); %>
+        <% if (q) params.set('q', q); %>
+        <% function pageUrl(p) { const pp = new URLSearchParams(params); pp.set('page', p); return '/brands/' + brand.id + '?' + pp.toString(); } %>
+
+        <% if (page > 1) { %>
+          <a href="<%= pageUrl(page - 1) %>" class="pagination-btn">&laquo; Prev</a>
+        <% } else { %>
+          <span class="pagination-btn pagination-disabled">&laquo; Prev</span>
+        <% } %>
+
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <% if (i === page) { %>
+            <span class="pagination-btn pagination-active"><%= i %></span>
+          <% } else if (Math.abs(i - page) <= 2 || i === 1 || i === totalPages) { %>
+            <a href="<%= pageUrl(i) %>" class="pagination-btn"><%= i %></a>
+          <% } else if (Math.abs(i - page) === 3) { %>
+            <span class="pagination-ellipsis">&hellip;</span>
+          <% } %>
+        <% } %>
+
+        <% if (page < totalPages) { %>
+          <a href="<%= pageUrl(page + 1) %>" class="pagination-btn">Next &raquo;</a>
+        <% } else { %>
+          <span class="pagination-btn pagination-disabled">Next &raquo;</span>
+        <% } %>
+
+        <span class="pagination-info">Page <%= page %> of <%= totalPages %> (<%= totalProducts %> products)</span>
+      </nav>
+      <% } %>
+
+    <% } %>
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/shop-foot') %>

@@ -1,0 +1,77 @@
+<% const pageTitle = 'Order Confirmed — ' + content.brand.name; %>
+<% const pageDescription = 'Your order has been placed successfully.'; %>
+<%- include('partials/shop-head') %>
+
+<%- include('partials/nav') %>
+
+<main class="success-main">
+  <div class="success-inner">
+    <!-- Decorative particles -->
+    <div class="success-particles">
+      <div class="success-particle"></div>
+      <div class="success-particle"></div>
+      <div class="success-particle"></div>
+      <div class="success-particle"></div>
+      <div class="success-particle"></div>
+      <div class="success-particle"></div>
+    </div>
+
+    <div class="success-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <p class="section-eyebrow center">Order Confirmed</p>
+    <h1 class="success-title">Thank You, <em class="script-heading"><%= order.name.split(' ')[0] %></em></h1>
+    <p class="success-subtitle">Your order has been placed successfully. We'll be in touch with updates very soon.</p>
+
+    <div class="success-order-box">
+      <div class="success-order-id">
+        <span class="success-order-label">Order ID</span>
+        <span class="success-order-value"><%= order.orderId %></span>
+      </div>
+      <div class="success-order-details">
+        <div class="success-detail-row">
+          <span>Email</span><span><%= order.email %></span>
+        </div>
+        <div class="success-detail-row">
+          <span>Ship To</span><span><%= order.address %>, <%= order.city %></span>
+        </div>
+        <div class="success-detail-row">
+          <span>Payment</span>
+          <span class="payment-method-badge">
+            <%= order.paymentMethod === 'cod' ? '💵 Cash on Delivery' : order.paymentMethod === 'bank' ? '🏦 Bank Transfer' : '💳 Credit/Debit Card' %>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Items Summary -->
+    <div class="success-items">
+      <h3 class="success-items-title">Items Ordered</h3>
+      <% order.items.forEach(function(item) { %>
+        <div class="checkout-item">
+          <div class="checkout-item-img-wrap">
+            <img src="<%= item.image %>" alt="<%= item.title %>" class="checkout-item-img">
+            <span class="checkout-item-qty-badge"><%= item.qty %></span>
+          </div>
+          <div class="checkout-item-info">
+            <p class="checkout-item-title"><%= item.title %></p>
+          </div>
+          <span class="checkout-item-price"><%= priceUsd(item.price * item.qty) %></span>
+        </div>
+      <% }); %>
+      <div class="success-total-row">
+        <span>Order Total</span>
+        <strong><%= usd(order.total) %></strong>
+      </div>
+    </div>
+
+    <div class="success-actions">
+      <a href="/orders/track?orderId=<%= order.orderId %>&email=<%= encodeURIComponent(order.email) %>" class="btn btn-terracotta">Track My Order</a>
+      <a href="/products" class="btn btn-secondary">Continue Shopping</a>
+      <a href="/" class="btn btn-secondary">Back to Home</a>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/shop-foot') %>

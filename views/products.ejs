@@ -1,0 +1,312 @@
+<%
+  const pageTitle = 'Shop — ' + content.brand.name;
+  const pageDescription = 'Browse our full collection of curated clothing pieces.';
+  /* Build URL helper — preserves current filters, overrides specified params */
+  function buildUrl(overrides) {
+    const base = { filter, category, brand, productType, fabric, sort, q };
+    Object.assign(base, overrides || {});
+    const ps = new URLSearchParams();
+    Object.entries(base).forEach(([k, v]) => { if (v) ps.set(k, v); });
+    const qs = ps.toString();
+    return '/products' + (qs ? '?' + qs : '');
+  }
+  const sep = '<span class="breadcrumb-sep"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l4 4-4 4"/></svg></span>';
+  const filterLabels = { new: 'New Arrivals', bestseller: 'Bestsellers', archive: 'Archive' };
+  const hasAnyFilter = filter || category || brand || productType || fabric || q;
+%>
+<%- include('partials/shop-head') %>
+
+<%- include('partials/nav') %>
+
+<main class="shop-main">
+  <!-- Page Hero -->
+  <section class="shop-hero-header">
+    <div class="shop-hero-bg">
+      <div class="shop-hero-grain"></div>
+      <div class="shop-hero-orb shop-hero-orb-1"></div>
+      <div class="shop-hero-orb shop-hero-orb-2"></div>
+    </div>
+    <div class="shop-hero-content">
+      <p class="section-eyebrow center">Our Collection</p>
+      <h1 class="shop-title">Shop <em class="script-heading"><%= brand || 'All Pieces' %></em></h1>
+      <p class="shop-hero-subtitle"><%= brand ? 'Explore the ' + brand + ' collection.' : 'Everything we curate, all in one place. Have a look around.' %></p>
+    </div>
+  </section>
+
+  <!-- Mobile Filter Toggle -->
+  <button class="mobile-filter-toggle" id="mobile-filter-toggle" aria-label="Filters">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V14"/><path d="M4 10V3"/><path d="M12 21V12"/><path d="M12 8V3"/><path d="M20 21V16"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>
+    <span>Filters</span>
+    <% if (hasAnyFilter) { %><span class="filter-count-badge">&bull;</span><% } %>
+  </button>
+
+  <!-- Filters Bar (desktop sticky + mobile drawer) -->
+  <div class="shop-filters-bar" id="shop-filters-bar">
+    <div class="shop-filters-inner">
+      <!-- Mobile drawer header -->
+      <div class="filter-drawer-header">
+        <span class="filter-drawer-title">Filters</span>
+        <button class="filter-drawer-close" id="filter-drawer-close" aria-label="Close filters">&times;</button>
+      </div>
+
+      <!-- Row 1: Primary filter chips -->
+      <div class="shop-filter-row shop-filter-row--primary">
+        <div class="shop-filter-chips">
+          <a href="/products" class="filter-chip <%= !hasAnyFilter ? 'active' : '' %>">All</a>
+          <a href="<%= buildUrl({ filter: 'new', category: '', brand: '', productType: '', fabric: '' }) %>" class="filter-chip <%= filter === 'new' ? 'active' : '' %>">New Arrivals</a>
+          <a href="<%= buildUrl({ filter: 'bestseller', category: '', brand: '', productType: '', fabric: '' }) %>" class="filter-chip <%= filter === 'bestseller' ? 'active' : '' %>">Bestsellers</a>
+          <a href="<%= buildUrl({ filter: 'archive', category: '', brand: '', productType: '', fabric: '' }) %>" class="filter-chip <%= filter === 'archive' ? 'active' : '' %>">Archive</a>
+        </div>
+      </div>
+
+      <!-- Row 2: Cascading dropdowns + search -->
+      <div class="shop-filter-row shop-filter-row--cascading">
+        <div class="shop-filter-dropdowns">
+          <% if (brandNames.length) { %>
+          <div class="filter-dropdown">
+            <select class="filter-select" onchange="window.location=this.value" aria-label="Brand">
+              <option value="<%= buildUrl({ brand: '' }) %>" <%= !brand ? 'selected' : '' %>>All Brands</option>
+              <% brandNames.forEach(function(b) { %>
+                <option value="<%= buildUrl({ brand: b.name, category: '', productType: '', fabric: '' }) %>" <%= brand === b.name ? 'selected' : '' %>><%= b.name %></option>
+              <% }); %>
+            </select>
+          </div>
+          <% } %>
+
+          <% if (categories.length) { %>
+          <div class="filter-dropdown">
+            <select class="filter-select" onchange="window.location=this.value" aria-label="Category">
+              <option value="<%= buildUrl({ category: '' }) %>" <%= !category ? 'selected' : '' %>>All Categories</option>
+              <% categories.forEach(function(cat) { %>
+                <option value="<%= buildUrl({ category: cat }) %>" <%= category === cat ? 'selected' : '' %>><%= cat %></option>
+              <% }); %>
+            </select>
+          </div>
+          <% } %>
+
+          <% if (productTypes.length) { %>
+          <div class="filter-dropdown">
+            <select class="filter-select" onchange="window.location=this.value" aria-label="Product Type">
+              <option value="<%= buildUrl({ productType: '' }) %>" <%= !productType ? 'selected' : '' %>>All Types</option>
+              <% productTypes.forEach(function(pt) { %>
+                <option value="<%= buildUrl({ productType: pt }) %>" <%= productType === pt ? 'selected' : '' %>><%= pt %></option>
+              <% }); %>
+            </select>
+          </div>
+          <% } %>
+
+          <% if (fabrics.length) { %>
+          <div class="filter-dropdown">
+            <select class="filter-select" onchange="window.location=this.value" aria-label="Fabric">
+              <option value="<%= buildUrl({ fabric: '' }) %>" <%= !fabric ? 'selected' : '' %>>All Fabrics</option>
+              <% fabrics.forEach(function(f) { %>
+                <option value="<%= buildUrl({ fabric: f }) %>" <%= fabric === f ? 'selected' : '' %>><%= f %></option>
+              <% }); %>
+            </select>
+          </div>
+          <% } %>
+        </div>
+
+        <div class="shop-filter-right">
+          <!-- Sort -->
+          <div class="shop-sort-wrap">
+            <select class="filter-select shop-sort-select" onchange="window.location=this.value" aria-label="Sort order">
+              <option value="<%= buildUrl({ sort: '' }) %>" <%= !sort ? 'selected' : '' %>>Sort by</option>
+              <option value="<%= buildUrl({ sort: 'price-asc' }) %>" <%= sort === 'price-asc' ? 'selected' : '' %>>Price: Low → High</option>
+              <option value="<%= buildUrl({ sort: 'price-desc' }) %>" <%= sort === 'price-desc' ? 'selected' : '' %>>Price: High → Low</option>
+              <option value="<%= buildUrl({ sort: 'newest' }) %>" <%= sort === 'newest' ? 'selected' : '' %>>Newest First</option>
+            </select>
+          </div>
+
+          <!-- Search -->
+          <form class="shop-search-form" action="/products" method="GET">
+            <% if (brand) { %><input type="hidden" name="brand" value="<%= brand %>"><% } %>
+            <% if (category) { %><input type="hidden" name="category" value="<%= category %>"><% } %>
+            <% if (filter) { %><input type="hidden" name="filter" value="<%= filter %>"><% } %>
+            <% if (productType) { %><input type="hidden" name="productType" value="<%= productType %>"><% } %>
+            <% if (fabric) { %><input type="hidden" name="fabric" value="<%= fabric %>"><% } %>
+            <% if (sort) { %><input type="hidden" name="sort" value="<%= sort %>"><% } %>
+            <div class="shop-search-input-wrap">
+              <input type="text" name="q" value="<%= q %>" placeholder="Search products…" class="shop-search-input">
+              <button type="submit" class="shop-search-btn" aria-label="Search">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Mobile: apply button -->
+      <div class="filter-drawer-footer">
+        <span class="filter-drawer-count"><%= totalProducts %> product<%= totalProducts !== 1 ? 's' : '' %></span>
+        <button class="btn btn-terracotta filter-drawer-apply" id="filter-drawer-apply">Show Results</button>
+      </div>
+    </div>
+  </div>
+  <!-- Overlay for mobile filter drawer -->
+  <div class="filter-drawer-overlay" id="filter-drawer-overlay"></div>
+
+  <!-- Breadcrumb + Active Filters -->
+  <% if (hasAnyFilter) { %>
+  <nav class="breadcrumb shop-breadcrumb shop-breadcrumb--below">
+    <a href="/">Home</a>
+    <%- sep %>
+    <a href="/products">Shop</a>
+    <% if (brand) { %>
+      <%- sep %>
+      <% if (category || productType || fabric) { %>
+        <a href="<%= buildUrl({ category: '', productType: '', fabric: '' }) %>"><%= brand %></a>
+      <% } else { %>
+        <span class="breadcrumb-current"><%= brand %></span>
+      <% } %>
+    <% } %>
+    <% if (filter) { %>
+      <%- sep %>
+      <span class="breadcrumb-current"><%= filterLabels[filter] || filter %></span>
+    <% } %>
+    <% if (category) { %>
+      <%- sep %>
+      <span class="breadcrumb-current"><%= category %></span>
+    <% } %>
+    <% if (productType) { %>
+      <%- sep %>
+      <span class="breadcrumb-current"><%= productType %></span>
+    <% } %>
+    <% if (fabric) { %>
+      <%- sep %>
+      <span class="breadcrumb-current"><%= fabric %></span>
+    <% } %>
+    <% if (q) { %>
+      <%- sep %>
+      <span class="breadcrumb-current">"<%= q %>"</span>
+    <% } %>
+  </nav>
+
+  <!-- Active Filter Tags (dismissible) -->
+  <div class="active-filters">
+    <div class="active-filters-inner">
+      <% if (brand) { %>
+        <a href="<%= buildUrl({ brand: '' }) %>" class="active-filter-tag">
+          <span>Brand: <%= brand %></span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l6 6M9 3l-6 6"/></svg>
+        </a>
+      <% } %>
+      <% if (filter) { %>
+        <a href="<%= buildUrl({ filter: '' }) %>" class="active-filter-tag">
+          <span><%= filterLabels[filter] || filter %></span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l6 6M9 3l-6 6"/></svg>
+        </a>
+      <% } %>
+      <% if (category) { %>
+        <a href="<%= buildUrl({ category: '' }) %>" class="active-filter-tag">
+          <span><%= category %></span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l6 6M9 3l-6 6"/></svg>
+        </a>
+      <% } %>
+      <% if (productType) { %>
+        <a href="<%= buildUrl({ productType: '' }) %>" class="active-filter-tag">
+          <span><%= productType %></span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l6 6M9 3l-6 6"/></svg>
+        </a>
+      <% } %>
+      <% if (fabric) { %>
+        <a href="<%= buildUrl({ fabric: '' }) %>" class="active-filter-tag">
+          <span><%= fabric %></span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l6 6M9 3l-6 6"/></svg>
+        </a>
+      <% } %>
+      <% if (q) { %>
+        <a href="<%= buildUrl({ q: '' }) %>" class="active-filter-tag">
+          <span>"<%= q %>"</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l6 6M9 3l-6 6"/></svg>
+        </a>
+      <% } %>
+      <a href="/products" class="active-filter-clear">Clear All</a>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- Products Grid -->
+  <div class="shop-inner">
+    <% if (products.length === 0) { %>
+      <div class="shop-empty">
+        <div class="shop-empty-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--warm-taupe)" stroke-width="1"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </div>
+        <p class="shop-empty-title">No pieces found</p>
+        <p class="shop-empty-text">Try adjusting your filters or search terms.</p>
+        <a href="/products" class="btn btn-secondary">View All Pieces</a>
+      </div>
+    <% } else { %>
+      <div class="shop-grid">
+        <% products.forEach(function(product) { %>
+          <article class="shop-card">
+            <a href="/products/<%= product.id %>" class="shop-card-img-link">
+              <div class="shop-card-img">
+                <img src="<%= product.image %>" alt="<%= product.title %>" loading="lazy">
+                <% if (product.badge) { %>
+                  <span class="badge badge--<%= product.badgeStyle %> shop-badge"><%= product.badge %></span>
+                <% } %>
+              </div>
+            </a>
+            <div class="shop-card-body">
+              <p class="shop-card-category"><%= product.category %><% if (product.brand && !brand) { %> · <a href="/products?brand=<%= encodeURIComponent(product.brand) %>" class="shop-card-brand-link"><%= product.brand %></a><% } %></p>
+              <h3 class="shop-card-title"><a href="/products/<%= product.id %>"><%= product.title %></a></h3>
+              <p class="shop-card-meta"><%= product.meta %></p>
+              <div class="shop-card-footer">
+                <span class="shop-card-price"><%= priceUsd(product.price) %></span>
+                <form action="/cart/add" method="POST">
+                  <input type="hidden" name="id" value="<%= product.id %>">
+                  <input type="hidden" name="qty" value="1">
+                  <button type="submit" class="btn-add-cart">Add to Cart</button>
+                </form>
+              </div>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+
+      <% if (totalPages > 1) { %>
+      <nav class="pagination">
+        <% const params = new URLSearchParams(); %>
+        <% if (filter) params.set('filter', filter); %>
+        <% if (category) params.set('category', category); %>
+        <% if (brand) params.set('brand', brand); %>
+        <% if (productType) params.set('productType', productType); %>
+        <% if (fabric) params.set('fabric', fabric); %>
+        <% if (sort) params.set('sort', sort); %>
+        <% if (q) params.set('q', q); %>
+        <% function pageUrl(p) { const pp = new URLSearchParams(params); pp.set('page', p); return '/products?' + pp.toString(); } %>
+
+        <% if (page > 1) { %>
+          <a href="<%= pageUrl(page - 1) %>" class="pagination-btn">&laquo; Prev</a>
+        <% } else { %>
+          <span class="pagination-btn pagination-disabled">&laquo; Prev</span>
+        <% } %>
+
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <% if (i === page) { %>
+            <span class="pagination-btn pagination-active"><%= i %></span>
+          <% } else if (Math.abs(i - page) <= 2 || i === 1 || i === totalPages) { %>
+            <a href="<%= pageUrl(i) %>" class="pagination-btn"><%= i %></a>
+          <% } else if (Math.abs(i - page) === 3) { %>
+            <span class="pagination-ellipsis">&hellip;</span>
+          <% } %>
+        <% } %>
+
+        <% if (page < totalPages) { %>
+          <a href="<%= pageUrl(page + 1) %>" class="pagination-btn">Next &raquo;</a>
+        <% } else { %>
+          <span class="pagination-btn pagination-disabled">Next &raquo;</span>
+        <% } %>
+
+        <span class="pagination-info">Page <%= page %> of <%= totalPages %> (<%= totalProducts %> products)</span>
+      </nav>
+      <% } %>
+
+    <% } %>
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/shop-foot') %>

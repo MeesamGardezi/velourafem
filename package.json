@@ -1,0 +1,29 @@
+{
+  "name": "velourafem",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://local_proxy@127.0.0.1:45469/git/MeesamGardezi/velourafem"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@paddle/paddle-node-sdk": "^3.6.1",
+    "cheerio": "^1.2.0",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.3.1",
+    "ejs": "^5.0.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "firebase-admin": "^13.7.0",
+    "multer": "^2.1.1",
+    "node-cron": "^4.2.1"
+  }
+}

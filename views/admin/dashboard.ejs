@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — paknits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Instrument+Sans:wght@0,400;0,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body no-loader">
+  <%- include('../partials/admin-nav') %>
+
+  <div class="admin-content">
+    <div class="admin-page-header">
+      <h1 class="admin-page-title">Dashboard</h1>
+      <p class="admin-page-sub">Welcome back to paknits Admin</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="admin-stats-grid">
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">👗</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= products.length %></span>
+          <span class="admin-stat-label">Total Products</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">📦</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= orders.length %></span>
+          <span class="admin-stat-label">Total Orders</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">🕐</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= orders.filter(o => (o.status || 'pending') === 'pending').length %></span>
+          <span class="admin-stat-label">Pending Orders</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">📄</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= catalogues.length %></span>
+          <span class="admin-stat-label">Catalogues</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">🏷</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= brands.length %></span>
+          <span class="admin-stat-label">Brands</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">⭐</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= products.filter(p => p.featured).length %></span>
+          <span class="admin-stat-label">Featured Products</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="admin-quick-links">
+      <h2 class="admin-section-title">Quick Actions</h2>
+      <div class="admin-quick-grid">
+        <a href="/admin/orders" class="admin-quick-card">
+          <span class="admin-quick-icon">📦</span>
+          <span>Manage Orders</span>
+        </a>
+        <a href="/admin/products/new" class="admin-quick-card">
+          <span class="admin-quick-icon">➕</span>
+          <span>Add New Product</span>
+        </a>
+        <a href="/admin/catalogues" class="admin-quick-card">
+          <span class="admin-quick-icon">📤</span>
+          <span>Upload Catalogue</span>
+        </a>
+        <a href="/admin/brands" class="admin-quick-card">
+          <span class="admin-quick-icon">🏷</span>
+          <span>Manage Brands</span>
+        </a>
+        <a href="/products" class="admin-quick-card" target="_blank">
+          <span class="admin-quick-icon">🛍</span>
+          <span>View Shop</span>
+        </a>
+        <a href="/" class="admin-quick-card" target="_blank">
+          <span class="admin-quick-icon">🌐</span>
+          <span>View Website</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <% if (orders.length) { %>
+    <div class="admin-recent" style="margin-bottom:32px">
+      <div class="admin-section-header">
+        <h2 class="admin-section-title">Recent Orders</h2>
+        <a href="/admin/orders" class="admin-view-all">View All →</a>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% orders.slice(0, 5).forEach(function(o) { %>
+              <tr>
+                <td><code style="font-size:0.82rem"><%= o.orderId %></code></td>
+                <td><%= o.name %><br><small style="color:#9ca3af"><%= o.email %></small></td>
+                <td style="font-size:0.82rem"><%= new Date(o.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %></td>
+                <td><strong><%= usd(o.total || 0) %></strong></td>
+                <td>
+                  <% const sc = {pending:'#fef9c3',confirmed:'#d1fae5',processing:'#dbeafe',shipped:'#ede9fe',delivered:'#bbf7d0',cancelled:'#fee2e2'}; %>
+                  <% const tc = {pending:'#92400e',confirmed:'#065f46',processing:'#1e40af',shipped:'#5b21b6',delivered:'#14532d',cancelled:'#991b1b'}; %>
+                  <span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:<%= sc[o.status||'pending'] %>;color:<%= tc[o.status||'pending'] %>"><%= o.status || 'pending' %></span>
+                </td>
+                <td class="admin-actions">
+                  <a href="/admin/orders/<%= o.firestoreId %>" class="admin-btn-edit">View</a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Recent Products -->
+    <div class="admin-recent">
+      <div class="admin-section-header">
+        <h2 class="admin-section-title">Recent Products</h2>
+        <a href="/admin/products" class="admin-view-all">View All →</a>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% products.slice(0, 5).forEach(function(p) { %>
+              <tr>
+                <td><img src="<%= p.image %>" alt="<%= p.title %>" class="admin-table-img"></td>
+                <td class="admin-table-title"><%= p.title %></td>
+                <td><span class="admin-tag"><%= p.category %></span></td>
+                <td><%= usd(p.price) %></td>
+                <td>
+                  <span class="admin-stock-badge admin-stock-<%= p.inStock ? 'in' : 'out' %>">
+                    <%= p.inStock ? 'In Stock' : 'Out of Stock' %>
+                  </span>
+                </td>
+                <td class="admin-actions">
+                  <a href="/admin/products/<%= p.id %>/edit" class="admin-btn-edit">Edit</a>
+                  <form action="/admin/products/<%= p.id %>/delete" method="POST" style="display:inline" onsubmit="return confirm('Delete this product?')">
+                    <button type="submit" class="admin-btn-delete">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+  <div class="admin-content">
+    <div class="admin-page-header">
+      <h1 class="admin-page-title">Dashboard</h1>
+      <p class="admin-page-sub">Welcome back to paknits Admin</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="admin-stats-grid">
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">👗</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= products.length %></span>
+          <span class="admin-stat-label">Total Products</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">📄</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= catalogues.length %></span>
+          <span class="admin-stat-label">Catalogues Uploaded</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">🏷</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= brands.length %></span>
+          <span class="admin-stat-label">Brands</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">⭐</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= products.filter(p => p.featured).length %></span>
+          <span class="admin-stat-label">Featured Products</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">✓</div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-value"><%= products.filter(p => p.inStock).length %></span>
+          <span class="admin-stat-label">In Stock</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="admin-quick-links">
+      <h2 class="admin-section-title">Quick Actions</h2>
+      <div class="admin-quick-grid">
+        <a href="/admin/products/new" class="admin-quick-card">
+          <span class="admin-quick-icon">➕</span>
+          <span>Add New Product</span>
+        </a>
+        <a href="/admin/catalogues" class="admin-quick-card">
+          <span class="admin-quick-icon">📤</span>
+          <span>Upload Catalogue</span>
+        </a>
+        <a href="/admin/brands" class="admin-quick-card">
+          <span class="admin-quick-icon">🏷</span>
+          <span>Manage Brands</span>
+        </a>
+        <a href="/products" class="admin-quick-card" target="_blank">
+          <span class="admin-quick-icon">🛍</span>
+          <span>View Shop</span>
+        </a>
+        <a href="/" class="admin-quick-card" target="_blank">
+          <span class="admin-quick-icon">🌐</span>
+          <span>View Website</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Recent Products -->
+    <div class="admin-recent">
+      <div class="admin-section-header">
+        <h2 class="admin-section-title">Recent Products</h2>
+        <a href="/admin/products" class="admin-view-all">View All →</a>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% products.slice(0, 5).forEach(function(p) { %>
+              <tr>
+                <td><img src="<%= p.image %>" alt="<%= p.title %>" class="admin-table-img"></td>
+                <td class="admin-table-title"><%= p.title %></td>
+                <td><span class="admin-tag"><%= p.category %></span></td>
+                <td><%= usd(p.price) %></td>
+                <td>
+                  <span class="admin-stock-badge admin-stock-<%= p.inStock ? 'in' : 'out' %>">
+                    <%= p.inStock ? 'In Stock' : 'Out of Stock' %>
+                  </span>
+                </td>
+                <td class="admin-actions">
+                  <a href="/admin/products/<%= p.id %>/edit" class="admin-btn-edit">Edit</a>
+                  <form action="/admin/products/<%= p.id %>/delete" method="POST" style="display:inline" onsubmit="return confirm('Delete this product?')">
+                    <button type="submit" class="admin-btn-delete">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

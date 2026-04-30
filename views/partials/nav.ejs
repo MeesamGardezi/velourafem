@@ -1,0 +1,46 @@
+<header class="site-header" id="site-header">
+  <nav class="nav">
+    <a href="/" class="nav-logo">
+      <span class="nav-logo-text"><%= content.brand.name %></span>
+      <span class="script nav-logo-script"><%= content.brand.tagScript %></span>
+    </a>
+
+    <ul class="nav-links">
+      <% content.nav.forEach(function(link) { %>
+        <li><a href="<%= link.href %>" class="nav-link"><%= link.label %></a></li>
+      <% }); %>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="/cart" class="nav-cart" aria-label="Cart">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"/>
+          <circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+        </svg>
+        <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
+          <span class="cart-badge"><%= cartCount %></span>
+        <% } %>
+      </a>
+      <a href="/products" class="btn btn-outline-sm nav-shop-btn">Shop Now</a>
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <button class="mobile-close" id="mobile-close">✕</button>
+  <ul class="mobile-links">
+    <% content.nav.forEach(function(link) { %>
+      <li><a href="<%= link.href %>" class="mobile-link"><%= link.label %></a></li>
+    <% }); %>
+    <li><a href="/cart" class="mobile-link">Cart (<%= typeof cartCount !== 'undefined' ? cartCount : 0 %>)</a></li>
+  </ul>
+  <div class="mobile-bottom">
+    <a href="/products" class="btn btn-primary">Shop Now</a>
+  </div>
+</div>
+<div class="mobile-overlay" id="mobile-overlay"></div>

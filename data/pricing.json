@@ -1,0 +1,167 @@
+{
+  "defaultMarkup": 300,
+  "defaultDelivery": 5000,
+  "freeShippingThreshold": 50000,
+  "countries": [
+    {
+      "code": "PK",
+      "name": "Pakistan",
+      "currency": "PKR",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "US",
+      "name": "United States",
+      "currency": "USD",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom",
+      "currency": "GBP",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "AE",
+      "name": "United Arab Emirates",
+      "currency": "AED",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "SA",
+      "name": "Saudi Arabia",
+      "currency": "SAR",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "CA",
+      "name": "Canada",
+      "currency": "CAD",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "AU",
+      "name": "Australia",
+      "currency": "AUD",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "DE",
+      "name": "Germany",
+      "currency": "EUR",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "FR",
+      "name": "France",
+      "currency": "EUR",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "TR",
+      "name": "Turkey",
+      "currency": "TRY",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "MY",
+      "name": "Malaysia",
+      "currency": "MYR",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "QA",
+      "name": "Qatar",
+      "currency": "QAR",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "KW",
+      "name": "Kuwait",
+      "currency": "KWD",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "BH",
+      "name": "Bahrain",
+      "currency": "BHD",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "OM",
+      "name": "Oman",
+      "currency": "OMR",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "IN",
+      "name": "India",
+      "currency": "INR",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "BD",
+      "name": "Bangladesh",
+      "currency": "BDT",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "SG",
+      "name": "Singapore",
+      "currency": "SGD",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "NZ",
+      "name": "New Zealand",
+      "currency": "NZD",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    },
+    {
+      "code": "JP",
+      "name": "Japan",
+      "currency": "JPY",
+      "markup": 0,
+      "delivery": 0,
+      "enabled": false
+    }
+  ]
+}

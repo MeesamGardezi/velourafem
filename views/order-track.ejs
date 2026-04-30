@@ -1,0 +1,166 @@
+<% const pageTitle = 'Track Your Order — ' + content.brand.name; %>
+<% const pageDescription = 'Enter your order ID and email to track your order status.'; %>
+<%- include('partials/shop-head') %>
+
+<%- include('partials/nav') %>
+
+<main style="min-height:70vh;padding:60px 0">
+  <div style="max-width:680px;margin:0 auto;padding:0 24px">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb shop-breadcrumb" style="margin-bottom:32px">
+      <a href="/">Home</a>
+      <span class="breadcrumb-sep">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l4 4-4 4"/></svg>
+      </span>
+      <span class="breadcrumb-current">Track Order</span>
+    </nav>
+
+    <p class="section-eyebrow">Order Status</p>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,2.8rem);font-weight:400;margin:0 0 8px">
+      Track Your <em class="script-heading">Order</em>
+    </h1>
+    <p style="color:#888;margin:0 0 36px;font-size:0.95rem">
+      Enter your Order ID and the email address you used at checkout.
+    </p>
+
+    <!-- Lookup Form -->
+    <form action="/orders/track" method="POST" style="background:#faf8f5;border:1px solid #e8e0d8;border-radius:14px;padding:28px;margin-bottom:32px">
+      <% if (error) { %>
+        <div class="checkout-error" style="margin-bottom:18px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          <%= error %>
+        </div>
+      <% } %>
+      <div class="form-row" style="margin-bottom:16px">
+        <div class="form-group">
+          <label for="orderId">Order ID <span class="required">*</span></label>
+          <input type="text" id="orderId" name="orderId" required placeholder="e.g. ORD-LHZ4K9" value="<%= query.orderId || '' %>" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address <span class="required">*</span></label>
+          <input type="email" id="email" name="email" required placeholder="you@example.com" value="<%= query.email || '' %>">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-terracotta" style="width:100%">Track Order</button>
+    </form>
+
+    <% if (order) { %>
+    <!-- Order Found -->
+    <div style="border:1px solid #e8e0d8;border-radius:14px;overflow:hidden;background:#fff">
+
+      <!-- Header -->
+      <div style="background:#f3ede6;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+        <div>
+          <p style="font-size:0.75rem;text-transform:uppercase;letter-spacing:.06em;color:#888;margin:0 0 4px">Order ID</p>
+          <p style="font-weight:700;font-size:1.05rem;margin:0"><%= order.orderId %></p>
+        </div>
+        <% const statusColors = {
+          pending:    { bg: '#fef9c3', color: '#92400e' },
+          confirmed:  { bg: '#d1fae5', color: '#065f46' },
+          processing: { bg: '#dbeafe', color: '#1e40af' },
+          shipped:    { bg: '#ede9fe', color: '#5b21b6' },
+          delivered:  { bg: '#bbf7d0', color: '#14532d' },
+          cancelled:  { bg: '#fee2e2', color: '#991b1b' },
+        };
+        const sc = statusColors[order.status] || statusColors.pending; %>
+        <span style="display:inline-block;padding:5px 16px;border-radius:20px;font-size:0.75rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:<%= sc.bg %>;color:<%= sc.color %>"><%= order.status || 'pending' %></span>
+      </div>
+
+      <!-- Progress Steps -->
+      <% const steps = ['pending','confirmed','processing','shipped','delivered'];
+         const currentIdx = steps.indexOf(order.status || 'pending');
+         const isCancelled = order.status === 'cancelled'; %>
+      <% if (!isCancelled) { %>
+      <div style="padding:24px;border-bottom:1px solid #f0ebe4">
+        <div style="display:flex;align-items:center;gap:0">
+          <% steps.forEach(function(step, i) {
+               const done = i < currentIdx;
+               const active = i === currentIdx;
+          %>
+            <div style="display:flex;flex-direction:column;align-items:center;flex:1;text-align:center">
+              <div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;background:<%= done ? '#10b981' : active ? '#b45309' : '#e8e0d8' %>;color:<%= (done || active) ? '#fff' : '#9ca3af' %>">
+                <% if (done) { %>✓<% } else { %><%= i + 1 %><% } %>
+              </div>
+              <p style="font-size:0.68rem;margin:5px 0 0;text-transform:uppercase;letter-spacing:.04em;color:<%= active ? '#b45309' : done ? '#10b981' : '#9ca3af' %>;font-weight:<%= active ? '700' : '400' %>"><%= step %></p>
+            </div>
+            <% if (i < steps.length - 1) { %>
+              <div style="flex:1;height:2px;background:<%= done ? '#10b981' : '#e8e0d8' %>;margin-bottom:20px"></div>
+            <% } %>
+          <% }); %>
+        </div>
+      </div>
+      <% } else { %>
+      <div style="padding:20px 24px;background:#fff5f5;border-bottom:1px solid #fee2e2;text-align:center">
+        <p style="color:#991b1b;font-weight:600;margin:0">This order has been cancelled.</p>
+      </div>
+      <% } %>
+
+      <!-- Details -->
+      <div style="padding:20px 24px;border-bottom:1px solid #f0ebe4;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.05em;color:#9ca3af;margin:0 0 4px">Placed On</p>
+          <p style="margin:0;font-size:0.9rem"><%= new Date(order.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
+        </div>
+        <div>
+          <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.05em;color:#9ca3af;margin:0 0 4px">Ship To</p>
+          <p style="margin:0;font-size:0.9rem"><%= order.city %><% if (order.country) { %>, <%= order.country %><% } %></p>
+        </div>
+        <div>
+          <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.05em;color:#9ca3af;margin:0 0 4px">Payment</p>
+          <p style="margin:0;font-size:0.9rem"><%= order.paymentMethod === 'card' ? '💳 Card' : order.paymentMethod %></p>
+        </div>
+        <div>
+          <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.05em;color:#9ca3af;margin:0 0 4px">Order Total</p>
+          <p style="margin:0;font-size:0.9rem;font-weight:700"><%= usd(order.total) %></p>
+        </div>
+      </div>
+
+      <!-- Items -->
+      <div style="padding:20px 24px;border-bottom:1px solid #f0ebe4">
+        <p style="font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em;color:#9ca3af;margin:0 0 12px">Items Ordered</p>
+        <% (order.items || []).forEach(function(item) { %>
+          <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #f9f6f2">
+            <img src="<%= item.image %>" alt="<%= item.title %>" style="width:44px;height:54px;object-fit:cover;border-radius:5px;flex-shrink:0">
+            <div style="flex:1">
+              <p style="margin:0;font-size:0.88rem;font-weight:500"><%= item.title %></p>
+              <p style="margin:2px 0 0;font-size:0.78rem;color:#9ca3af">Qty: <%= item.qty %></p>
+            </div>
+            <span style="font-size:0.88rem;font-weight:600"><%= usd(item.price * item.qty) %></span>
+          </div>
+        <% }); %>
+      </div>
+
+      <!-- Status History -->
+      <% if (order.statusHistory && order.statusHistory.length > 1) { %>
+      <div style="padding:20px 24px">
+        <p style="font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em;color:#9ca3af;margin:0 0 12px">Status Updates</p>
+        <% order.statusHistory.slice().reverse().forEach(function(h) { %>
+          <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid #f9f6f2">
+            <div style="width:10px;height:10px;border-radius:50%;background:#10b981;flex-shrink:0;margin-top:4px"></div>
+            <div>
+              <p style="margin:0;font-size:0.88rem;font-weight:600;text-transform:capitalize"><%= h.status %></p>
+              <p style="margin:2px 0 0;font-size:0.78rem;color:#9ca3af"><%= new Date(h.ts).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></p>
+              <% if (h.note) { %><p style="margin:2px 0 0;font-size:0.82rem;color:#6b7280;font-style:italic"><%= h.note %></p><% } %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+      <% } %>
+
+    </div>
+    <% } %>
+
+    <!-- Help -->
+    <div style="margin-top:32px;text-align:center">
+      <p style="font-size:0.88rem;color:#9ca3af">
+        Need help? Contact us at
+        <a href="mailto:<%= content.brand.email || 'support@' + content.brand.name.toLowerCase().replace(/\s+/g,'-') + '.com' %>" style="color:inherit;font-weight:600"><%= content.brand.email || 'support@paknits.com' %></a>
+      </p>
+    </div>
+
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/shop-foot') %>

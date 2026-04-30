@@ -1,0 +1,180 @@
+<% const pageTitle = 'Terms & Conditions — ' + content.brand.name; %>
+<% const pageDescription = 'Terms and Conditions for ' + content.brand.name + '.'; %>
+<%- include('partials/shop-head') %>
+
+<%- include('partials/nav') %>
+
+<main class="shop-main">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb shop-breadcrumb">
+    <a href="/">Home</a>
+    <span class="breadcrumb-sep">
+      <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l4 4-4 4"/></svg>
+    </span>
+    <span class="breadcrumb-current">Terms &amp; Conditions</span>
+  </nav>
+
+  <!-- Page Hero -->
+  <section class="shop-hero-header">
+    <div class="shop-hero-bg">
+      <div class="shop-hero-grain"></div>
+      <div class="shop-hero-orb shop-hero-orb-1"></div>
+      <div class="shop-hero-orb shop-hero-orb-2"></div>
+    </div>
+    <div class="shop-hero-content">
+      <p class="section-eyebrow center">Legal</p>
+      <h1 class="shop-title">Terms <em class="script-heading">&amp; Conditions</em></h1>
+      <p class="shop-hero-subtitle">Clear, honest, and kept as readable as possible.</p>
+    </div>
+  </section>
+
+  <!-- Terms Content -->
+  <section class="legal-content">
+    <div class="legal-inner">
+      <p class="legal-updated">Last updated: April 30, 2026</p>
+
+      <div class="legal-section">
+        <h2>1. About us</h2>
+        <p>
+          This website is operated by <strong><%= content.brand.name %></strong>. By browsing this site or placing an order, you agree to the terms below. If you disagree with any part of these terms, please do not use the site.
+        </p>
+        <p>
+          For questions, contact us at <a href="mailto:<%= content.brand.email %>"><%= content.brand.email %></a>.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>2. Payment &amp; Paddle as Merchant of Record</h2>
+        <p>
+          All payments on this website are processed by <strong>Paddle</strong> (Paddle.com Market Ltd., Paddle Payments Ltd., or Paddle.com Inc., depending on your location), who act as the <strong>Merchant of Record</strong> for all transactions. This means Paddle is the legal seller of record — your payment is made to Paddle, not directly to <%= content.brand.name %>.
+        </p>
+        <p>
+          By completing a purchase you also agree to
+          <a href="https://paddle.com/legal/checkout-buyer-terms" target="_blank" rel="noopener noreferrer">Paddle's Checkout Buyer Terms</a>.
+          Paddle handles all payment processing, invoicing, and Sales Tax collection and remittance on our behalf.
+        </p>
+        <p>
+          Your payment card statement will show a charge from <strong>PADDLE.NET</strong> or <strong>PADDLE.COM</strong>. If you have any questions about a charge, visit <a href="https://www.paddle.com/about/why-has-paddle-charged-me" target="_blank" rel="noopener noreferrer">paddle.com/about/why-has-paddle-charged-me</a>.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>3. Prices &amp; taxes</h2>
+        <p>
+          All prices shown are in USD. Applicable Sales Tax (VAT, GST, or equivalent) may be added at checkout and is calculated and remitted by Paddle based on your location. The final price displayed at checkout is the price you pay.
+        </p>
+        <p>
+          We reserve the right to update prices at any time. Prices confirmed at checkout are binding for that order.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>4. Orders</h2>
+        <p>
+          Placing an order is an offer to purchase. Your order is accepted when you receive an order confirmation email. We reserve the right to cancel or refuse any order due to stock unavailability, pricing errors, or suspected fraud, in which case you will receive a full refund.
+        </p>
+        <p>
+          You must be at least 18 years old to place an order, or purchasing under the supervision of a parent or legal guardian.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>5. Shipping &amp; delivery</h2>
+        <p>
+          We aim to dispatch orders within 2–5 business days of payment confirmation. Delivery timeframes are estimates and may be affected by carrier delays, customs processing, or circumstances beyond our control. Once dispatched, we will provide tracking information where available.
+        </p>
+        <p>
+          International orders may be subject to customs duties and import taxes levied by the destination country. These charges are the buyer's responsibility and are separate from any Sales Tax collected at checkout.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>6. Returns, refunds &amp; the 14-day right of withdrawal</h2>
+        <p>
+          We offer a <strong>14-day return window</strong> from the date of delivery. To be eligible for a return:
+        </p>
+        <ul>
+          <li>The item must be unused, unworn, unwashed, and in its original condition with all tags attached.</li>
+          <li>You must contact us at <a href="mailto:<%= content.brand.email %>"><%= content.brand.email %></a> within 14 days of receiving your order to initiate a return.</li>
+          <li>Return shipping costs are the buyer's responsibility unless the item is faulty or we made an error.</li>
+        </ul>
+        <p>
+          Items marked as <strong>Final Sale</strong>, custom or personalised orders, and items that have been worn, washed, or had their tags removed are not eligible for return.
+        </p>
+        <p>
+          <strong>Refunds:</strong> Once we receive and inspect the returned item, refunds are processed by Paddle within 5–10 business days to the original payment method. As Paddle is the Merchant of Record, all refunds are issued through Paddle. You may also request a refund directly from Paddle within 14 days of purchase in accordance with <a href="https://paddle.com/legal/checkout-buyer-terms" target="_blank" rel="noopener noreferrer">Paddle's Checkout Buyer Terms</a>.
+        </p>
+        <p>
+          If you received a faulty, damaged, or incorrect item, please contact us within 48 hours of delivery and we will arrange a replacement or full refund at no cost to you.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>7. Product descriptions &amp; accuracy</h2>
+        <p>
+          We make every effort to display product images, colours, and descriptions accurately. However, colours may appear slightly different on different screens and minor variations in fabric or sizing are possible. If you are unsure about a product, contact us before ordering.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>8. Intellectual property</h2>
+        <p>
+          All content on this website — including text, photography, graphics, and the <%= content.brand.name %> brand name and logo — is the intellectual property of <%= content.brand.name %> or its licensors. You may not reproduce, distribute, or use any content without our prior written permission.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>9. Acceptable use</h2>
+        <p>
+          You agree not to use this website for any unlawful purpose, to attempt to gain unauthorised access to any part of the site, or to upload or transmit any harmful content. We reserve the right to restrict access to users who violate these terms.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>10. Limitation of liability</h2>
+        <p>
+          To the fullest extent permitted by law, <%= content.brand.name %> shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of this site or purchase of our products. Our total liability for any claim shall not exceed the amount you paid for the order giving rise to that claim.
+        </p>
+        <p>
+          Nothing in these terms limits liability for death or personal injury caused by negligence, fraud, or any liability that cannot be excluded under applicable law.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>11. Dispute resolution</h2>
+        <p>
+          If you have a problem with your order, please contact us first at <a href="mailto:<%= content.brand.email %>"><%= content.brand.email %></a> — we will do our best to resolve things quickly and fairly.
+        </p>
+        <p>
+          For payment and billing disputes, you may also contact Paddle directly via <a href="https://paddle.com" target="_blank" rel="noopener noreferrer">paddle.com</a>, as Paddle is the Merchant of Record for all transactions.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>12. Changes to these terms</h2>
+        <p>
+          We may update these terms from time to time. The revised version will be posted on this page with an updated date. Continuing to use the site after changes are posted constitutes acceptance of the updated terms.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>13. Governing law</h2>
+        <p>
+          These terms are governed by and construed in accordance with applicable law. Any disputes shall be subject to the exclusive jurisdiction of the competent courts in the territory where <%= content.brand.name %> is registered.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>14. Contact</h2>
+        <p>
+          <%= content.brand.name %><br>
+          Email: <a href="mailto:<%= content.brand.email %>"><%= content.brand.email %></a>
+        </p>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/shop-foot') %>

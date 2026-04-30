@@ -1,0 +1,184 @@
+<% const pageTitle = 'Privacy Policy — ' + content.brand.name; %>
+<% const pageDescription = 'How we handle your data at ' + content.brand.name + '.'; %>
+<%- include('partials/shop-head') %>
+
+<%- include('partials/nav') %>
+
+<main class="shop-main">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb shop-breadcrumb">
+    <a href="/">Home</a>
+    <span class="breadcrumb-sep">
+      <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l4 4-4 4"/></svg>
+    </span>
+    <span class="breadcrumb-current">Privacy Policy</span>
+  </nav>
+
+  <!-- Page Hero -->
+  <section class="shop-hero-header">
+    <div class="shop-hero-bg">
+      <div class="shop-hero-grain"></div>
+      <div class="shop-hero-orb shop-hero-orb-1"></div>
+      <div class="shop-hero-orb shop-hero-orb-2"></div>
+    </div>
+    <div class="shop-hero-content">
+      <p class="section-eyebrow center">Legal</p>
+      <h1 class="shop-title">Privacy <em class="script-heading">Policy</em></h1>
+      <p class="shop-hero-subtitle">What we collect, why we collect it, and what we do with it. No surprises.</p>
+    </div>
+  </section>
+
+  <!-- Privacy Content -->
+  <section class="legal-content">
+    <div class="legal-inner">
+      <p class="legal-updated">Last updated: April 30, 2026</p>
+
+      <div class="legal-section">
+        <h2>1. Who we are</h2>
+        <p>
+          This Privacy Policy applies to <strong><%= content.brand.name %></strong> and describes how we collect, use, and protect personal information when you visit our website or place an order.
+        </p>
+        <p>
+          For any privacy-related questions, contact us at <a href="mailto:<%= content.brand.email %>"><%= content.brand.email %></a>.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>2. Data we collect</h2>
+        <p>We collect only the information necessary to operate our business and serve you:</p>
+        <ul>
+          <li><strong>Identity &amp; contact data:</strong> Name, email address, phone number, and shipping address — collected when you place an order or contact us.</li>
+          <li><strong>Order data:</strong> Products ordered, quantities, order value, order status, and delivery information.</li>
+          <li><strong>Payment data:</strong> Payment card details are collected and processed exclusively by <strong>Paddle</strong> (our payment provider and Merchant of Record). We do not receive or store your full card number. See Section 5 for more on Paddle.</li>
+          <li><strong>Technical data:</strong> IP address, browser type and version, device type, pages visited, and referring URLs — collected automatically via server logs and cookies.</li>
+          <li><strong>Communications data:</strong> Any correspondence you send us, including emails and support messages.</li>
+        </ul>
+      </div>
+
+      <div class="legal-section">
+        <h2>3. How we use your data</h2>
+        <p>We use your personal information to:</p>
+        <ul>
+          <li>Process, fulfil, and ship your orders.</li>
+          <li>Send order confirmations, delivery updates, and tracking information.</li>
+          <li>Respond to customer service enquiries and resolve disputes.</li>
+          <li>Detect and prevent fraud and unauthorised access.</li>
+          <li>Comply with legal and regulatory obligations (e.g. tax records, consumer law).</li>
+          <li>Improve our website and product offering based on aggregated usage data.</li>
+          <li>Send marketing emails about new collections or offers — <strong>only if you have opted in</strong>. You may unsubscribe at any time via the link in any marketing email.</li>
+        </ul>
+        <p>Our legal basis for processing is: <em>contract performance</em> (to fulfil your order), <em>legal obligation</em> (compliance), and <em>legitimate interests</em> (security, fraud prevention, site improvement). Marketing emails rely on your <em>consent</em>.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2>4. Cookies</h2>
+        <p>We use cookies and similar technologies to:</p>
+        <ul>
+          <li>Keep your shopping cart and session active.</li>
+          <li>Remember your preferences (e.g. selected country/currency).</li>
+          <li>Understand how visitors use our site (analytics).</li>
+        </ul>
+        <p>You can disable cookies via your browser settings. Doing so may affect the functionality of the cart and checkout. We do not use third-party advertising or tracking cookies.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2>5. Paddle — payment processing &amp; data</h2>
+        <p>
+          All card payments on this website are processed by <strong>Paddle</strong> (Paddle.com Market Ltd. / Paddle Payments Ltd. / Paddle.com Inc.), who act as the <strong>Merchant of Record</strong> for all transactions. Paddle is an independent data controller for the personal data they collect in connection with payment processing.
+        </p>
+        <p>
+          When you complete a purchase, your payment information is sent directly to Paddle's secure servers. <%= content.brand.name %> does not receive or store your card details.
+        </p>
+        <p>
+          Paddle's handling of your personal data is governed by <a href="https://paddle.com/legal/privacy" target="_blank" rel="noopener noreferrer">Paddle's Privacy Policy</a>. For questions about a charge from Paddle, visit <a href="https://www.paddle.com/about/why-has-paddle-charged-me" target="_blank" rel="noopener noreferrer">paddle.com/about/why-has-paddle-charged-me</a>.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>6. Third parties we share data with</h2>
+        <p>We do not sell your personal data. We share it only with the following categories of trusted third parties, strictly for the purposes described:</p>
+        <ul>
+          <li><strong>Paddle</strong> — payment processing and Merchant of Record services.</li>
+          <li><strong>Shipping &amp; logistics providers</strong> — to deliver your order (your name and address are shared with couriers).</li>
+          <li><strong>Cloud infrastructure</strong> — our website and database (Firebase / Google Cloud) are hosted on secure third-party infrastructure. Data is stored in compliance with GDPR.</li>
+          <li><strong>Law enforcement or regulators</strong> — only where required by law, court order, or to protect rights and safety.</li>
+        </ul>
+        <p>All third-party processors are required to handle your data in accordance with applicable privacy laws.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2>7. Data retention</h2>
+        <p>
+          We retain your personal data for as long as necessary to fulfil the purposes described in this policy:
+        </p>
+        <ul>
+          <li><strong>Order data</strong> is retained for a minimum of 7 years to comply with tax and accounting obligations.</li>
+          <li><strong>Customer communications</strong> are retained for up to 3 years after last contact.</li>
+          <li><strong>Technical/log data</strong> is retained for up to 12 months.</li>
+          <li><strong>Marketing consent</strong> records are kept until you withdraw consent.</li>
+        </ul>
+        <p>After these periods, data is securely deleted or anonymised.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2>8. Security</h2>
+        <p>
+          We implement appropriate technical and organisational security measures to protect your personal data against unauthorised access, loss, or disclosure. These include encrypted HTTPS connections, access controls, and secure cloud infrastructure.
+        </p>
+        <p>
+          No online system is completely secure. In the event of a data breach that poses a risk to your rights, we will notify you and the relevant authorities as required by law.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>9. Your rights</h2>
+        <p>Under GDPR and applicable data protection law, you have the right to:</p>
+        <ul>
+          <li><strong>Access</strong> — request a copy of the personal data we hold about you.</li>
+          <li><strong>Rectification</strong> — ask us to correct inaccurate or incomplete data.</li>
+          <li><strong>Erasure</strong> — ask us to delete your data (subject to legal retention requirements).</li>
+          <li><strong>Restriction</strong> — ask us to limit how we process your data in certain circumstances.</li>
+          <li><strong>Portability</strong> — request your data in a structured, machine-readable format.</li>
+          <li><strong>Objection</strong> — object to processing based on legitimate interests, or to direct marketing at any time.</li>
+          <li><strong>Withdraw consent</strong> — withdraw marketing consent at any time; this does not affect the lawfulness of prior processing.</li>
+        </ul>
+        <p>
+          To exercise any of these rights, contact us at <a href="mailto:<%= content.brand.email %>"><%= content.brand.email %></a>. We will respond within 30 days. If you are unsatisfied with our response, you have the right to lodge a complaint with your local data protection authority.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>10. Children</h2>
+        <p>
+          This website is not directed at anyone under the age of 18. We do not knowingly collect personal data from minors. If you believe we have inadvertently collected data from a child, please contact us and we will delete it promptly.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>11. International transfers</h2>
+        <p>
+          Your data may be processed by our service providers (including Paddle and Google Firebase) in countries outside your own. Where data is transferred outside the UK or EEA, we ensure appropriate safeguards are in place, such as Standard Contractual Clauses approved by the relevant authorities.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>12. Updates to this policy</h2>
+        <p>
+          We may update this Privacy Policy from time to time. Any changes will be posted on this page with a revised "Last updated" date. We recommend reviewing this page periodically. Continued use of the site after changes constitutes acceptance of the updated policy.
+        </p>
+      </div>
+
+      <div class="legal-section">
+        <h2>13. Contact</h2>
+        <p>
+          <%= content.brand.name %><br>
+          Email: <a href="mailto:<%= content.brand.email %>"><%= content.brand.email %></a>
+        </p>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/shop-foot') %>

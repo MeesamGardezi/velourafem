@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders — Admin — paknits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Instrument+Sans:wght@0,400;0,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <style>
+    .order-status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .status-pending    { background: #fef9c3; color: #92400e; }
+    .status-confirmed  { background: #d1fae5; color: #065f46; }
+    .status-processing { background: #dbeafe; color: #1e40af; }
+    .status-shipped    { background: #ede9fe; color: #5b21b6; }
+    .status-delivered  { background: #bbf7d0; color: #14532d; }
+    .status-cancelled  { background: #fee2e2; color: #991b1b; }
+
+    .order-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+    @media (max-width: 700px) { .order-detail-grid { grid-template-columns: 1fr; } }
+    .order-detail-card { background: var(--admin-card-bg, #fff); border: 1px solid var(--admin-border, #e8e0d8); border-radius: 10px; padding: 20px; }
+    .order-detail-card h3 { font-size: 0.85rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #888; margin: 0 0 14px; }
+    .order-detail-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f0ebe4; font-size: 0.9rem; }
+    .order-detail-row:last-child { border-bottom: none; }
+    .order-detail-row span:first-child { color: #888; }
+
+    .status-timeline { margin: 0; padding: 0; list-style: none; }
+    .status-timeline li { display: flex; align-items: flex-start; gap: 12px; padding: 8px 0; position: relative; }
+    .status-timeline li::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: #10b981; flex-shrink: 0; margin-top: 4px; }
+    .status-timeline li.past::before { background: #d1d5db; }
+    .status-tl-info { flex: 1; }
+    .status-tl-label { font-weight: 600; font-size: 0.88rem; text-transform: capitalize; }
+    .status-tl-time  { font-size: 0.78rem; color: #9ca3af; }
+    .status-tl-note  { font-size: 0.82rem; color: #6b7280; font-style: italic; }
+
+    .admin-order-items-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .admin-order-items-table th { text-align: left; padding: 6px 8px; background: #f9f6f2; font-weight: 600; font-size: 0.78rem; letter-spacing: .04em; text-transform: uppercase; color: #888; }
+    .admin-order-items-table td { padding: 8px 8px; border-bottom: 1px solid #f0ebe4; vertical-align: middle; }
+    .admin-order-items-table tr:last-child td { border-bottom: none; }
+    .order-item-thumb { width: 44px; height: 54px; object-fit: cover; border-radius: 4px; }
+
+    .update-status-form { background: var(--admin-card-bg, #fff); border: 1px solid var(--admin-border, #e8e0d8); border-radius: 10px; padding: 20px; margin-top: 20px; }
+    .update-status-form h3 { font-size: 0.85rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #888; margin: 0 0 14px; }
+    .update-status-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+    .update-status-row select, .update-status-row input[type=text] { height: 40px; border: 1px solid #d4c8bc; border-radius: 6px; padding: 0 12px; font-size: 0.9rem; background: #faf8f5; }
+    .update-status-row select { min-width: 160px; }
+    .update-status-row input[type=text] { flex: 1; min-width: 200px; }
+
+    .orders-filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    .orders-filter-btn { padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1.5px solid #d4c8bc; background: transparent; cursor: pointer; text-decoration: none; color: inherit; letter-spacing: .03em; transition: all .15s; }
+    .orders-filter-btn.active, .orders-filter-btn:hover { background: #2c2c2c; color: #fff; border-color: #2c2c2c; }
+
+    .order-summary-counts { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+    .order-count-pill { background: #f3ede6; border-radius: 8px; padding: 10px 16px; text-align: center; min-width: 90px; }
+    .order-count-pill .count-num { font-size: 1.4rem; font-weight: 700; display: block; }
+    .order-count-pill .count-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: .05em; color: #888; }
+
+    .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #888; text-decoration: none; margin-bottom: 18px; }
+    .back-link:hover { color: #2c2c2c; }
+  </style>
+</head>
+<body class="admin-body no-loader">
+  <% const activePage = 'orders'; %>
+  <%- include('../partials/admin-nav') %>
+
+  <div class="admin-content">
+
+    <% if (typeof detailOrder !== 'undefined' && detailOrder) { %>
+    <!-- ══════════════════════════════════ ORDER DETAIL VIEW ══════════════════════════════════ -->
+
+      <a href="/admin/orders" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5"/></svg>
+        Back to Orders
+      </a>
+
+      <div class="admin-page-header">
+        <div>
+          <h1 class="admin-page-title"><%= detailOrder.orderId %></h1>
+          <p class="admin-page-sub">
+            Placed <%= new Date(detailOrder.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
+          </p>
+        </div>
+        <span class="order-status-badge status-<%= detailOrder.status || 'pending' %>"><%= detailOrder.status || 'pending' %></span>
+      </div>
+
+      <% if (success) { %><div class="admin-success"><%= success %></div><% } %>
+      <% if (error) { %><div class="admin-error"><%= error %></div><% } %>
+
+      <div class="order-detail-grid">
+        <!-- Customer Info -->
+        <div class="order-detail-card">
+          <h3>Customer</h3>
+          <div class="order-detail-row"><span>Name</span><span><%= detailOrder.name %></span></div>
+          <div class="order-detail-row"><span>Email</span><span><a href="mailto:<%= detailOrder.email %>"><%= detailOrder.email %></a></span></div>
+          <% if (detailOrder.phone) { %><div class="order-detail-row"><span>Phone</span><span><%= detailOrder.phone %></span></div><% } %>
+        </div>
+
+        <!-- Shipping -->
+        <div class="order-detail-card">
+          <h3>Shipping Address</h3>
+          <div class="order-detail-row"><span>Address</span><span><%= detailOrder.address %></span></div>
+          <div class="order-detail-row"><span>City</span><span><%= detailOrder.city %></span></div>
+          <% if (detailOrder.postalCode) { %><div class="order-detail-row"><span>Postal Code</span><span><%= detailOrder.postalCode %></span></div><% } %>
+          <% if (detailOrder.country) { %><div class="order-detail-row"><span>Country</span><span><%= detailOrder.country %></span></div><% } %>
+        </div>
+
+        <!-- Payment -->
+        <div class="order-detail-card">
+          <h3>Payment</h3>
+          <div class="order-detail-row"><span>Method</span><span><%= detailOrder.paymentMethod === 'card' ? '💳 Card (Paddle)' : detailOrder.paymentMethod %></span></div>
+          <% if (detailOrder.paddleTransactionId) { %><div class="order-detail-row"><span>Paddle Txn</span><span style="font-size:0.8rem;word-break:break-all"><%= detailOrder.paddleTransactionId %></span></div><% } %>
+          <div class="order-detail-row"><span>Subtotal</span><span><%= usd(detailOrder.subtotal || 0) %></span></div>
+          <div class="order-detail-row"><span>Shipping</span><span><%= detailOrder.delivery > 0 ? usd(detailOrder.delivery) : 'Free' %></span></div>
+          <div class="order-detail-row" style="font-weight:700"><span>Total</span><span><%= usd(detailOrder.total || 0) %></span></div>
+        </div>
+
+        <!-- Status Timeline -->
+        <div class="order-detail-card">
+          <h3>Status History</h3>
+          <% const history = (detailOrder.statusHistory || []).slice().reverse(); %>
+          <% if (history.length) { %>
+            <ul class="status-timeline">
+              <% history.forEach(function(h, i) { %>
+                <li class="<%= i > 0 ? 'past' : '' %>">
+                  <div class="status-tl-info">
+                    <div class="status-tl-label"><%= h.status %></div>
+                    <div class="status-tl-time"><%= new Date(h.ts).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></div>
+                    <% if (h.note) { %><div class="status-tl-note"><%= h.note %></div><% } %>
+                  </div>
+                </li>
+              <% }); %>
+            </ul>
+          <% } else { %>
+            <p style="color:#9ca3af;font-size:0.85rem">No history yet.</p>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Items -->
+      <div class="order-detail-card" style="margin-bottom:20px">
+        <h3>Items Ordered</h3>
+        <table class="admin-order-items-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Unit Price</th>
+              <th>Line Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% (detailOrder.items || []).forEach(function(item) { %>
+              <tr>
+                <td><img src="<%= item.image %>" alt="<%= item.title %>" class="order-item-thumb"></td>
+                <td><%= item.title %></td>
+                <td><%= item.qty %></td>
+                <td><%= usd(item.price) %></td>
+                <td><%= usd(item.price * item.qty) %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Update Status -->
+      <div class="update-status-form">
+        <h3>Update Order Status</h3>
+        <form action="/admin/orders/<%= detailOrder.firestoreId %>/status" method="POST">
+          <div class="update-status-row">
+            <select name="status" required>
+              <% statuses.forEach(function(s) { %>
+                <option value="<%= s %>" <%= (detailOrder.status === s) ? 'selected' : '' %>><%= s.charAt(0).toUpperCase() + s.slice(1) %></option>
+              <% }); %>
+            </select>
+            <input type="text" name="note" placeholder="Optional note (visible in history)">
+            <button type="submit" class="btn btn-terracotta" style="height:40px;padding:0 20px">Update Status</button>
+          </div>
+        </form>
+      </div>
+
+    <% } else { %>
+    <!-- ══════════════════════════════════ ORDERS LIST VIEW ══════════════════════════════════ -->
+
+      <div class="admin-page-header">
+        <div>
+          <h1 class="admin-page-title">Orders</h1>
+          <p class="admin-page-sub"><%= allOrders ? allOrders.length : 0 %> total orders</p>
+        </div>
+      </div>
+
+      <% if (success) { %><div class="admin-success"><%= success %></div><% } %>
+      <% if (error) { %><div class="admin-error"><%= error %></div><% } %>
+
+      <!-- Count pills per status -->
+      <% if (allOrders && allOrders.length) { %>
+        <div class="order-summary-counts">
+          <% const statusCounts = {}; statuses.forEach(s => statusCounts[s] = 0); allOrders.forEach(o => { const s = o.status || 'pending'; if (statusCounts[s] !== undefined) statusCounts[s]++; }); %>
+          <% statuses.forEach(function(s) { %>
+            <div class="order-count-pill">
+              <span class="count-num"><%= statusCounts[s] %></span>
+              <span class="count-label"><%= s %></span>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+
+      <!-- Filter bar -->
+      <div class="orders-filter-bar">
+        <a href="/admin/orders" class="orders-filter-btn <%= !statusFilter ? 'active' : '' %>">All</a>
+        <% statuses.forEach(function(s) { %>
+          <a href="/admin/orders?status=<%= s %>" class="orders-filter-btn <%= statusFilter === s ? 'active' : '' %>"><%= s.charAt(0).toUpperCase() + s.slice(1) %></a>
+        <% }); %>
+      </div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Date</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Payment</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!orders || orders.length === 0) { %>
+              <tr><td colspan="8" class="admin-empty-row">No orders yet.</td></tr>
+            <% } else { %>
+              <% orders.forEach(function(o) { %>
+                <tr>
+                  <td><code style="font-size:0.82rem"><%= o.orderId %></code></td>
+                  <td>
+                    <strong><%= o.name %></strong><br>
+                    <small style="color:#9ca3af"><%= o.email %></small>
+                  </td>
+                  <td style="font-size:0.82rem;white-space:nowrap">
+                    <%= new Date(o.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                  </td>
+                  <td><%= (o.items || []).length %> item<%= (o.items || []).length !== 1 ? 's' : '' %></td>
+                  <td><strong><%= usd(o.total || 0) %></strong></td>
+                  <td style="font-size:0.82rem"><%= o.paymentMethod === 'card' ? '💳 Card' : o.paymentMethod %></td>
+                  <td><span class="order-status-badge status-<%= o.status || 'pending' %>"><%= o.status || 'pending' %></span></td>
+                  <td class="admin-actions">
+                    <a href="/admin/orders/<%= o.firestoreId %>" class="admin-btn-edit">View</a>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+</body>
+</html>

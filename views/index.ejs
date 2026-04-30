@@ -1,0 +1,274 @@
+<%- include('partials/head') %>
+
+<%- include('partials/nav') %>
+
+<main>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" id="hero">
+    <div class="hero-bg">
+      <div class="hero-grain"></div>
+      <div class="hero-orb hero-orb-1"></div>
+      <div class="hero-orb hero-orb-2"></div>
+      <div class="hero-orb hero-orb-3"></div>
+    </div>
+    <div class="hero-border"></div>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow"><%= content.hero.eyebrow %></p>
+
+      <h1 class="hero-title">
+        <span class="hero-title-line"><%= content.hero.headline %></span>
+        <span class="hero-title-script script"><%= content.hero.headlineAccent %></span>
+      </h1>
+
+      <p class="hero-sub"><%= content.hero.subheadline %></p>
+
+      <div class="hero-actions">
+        <a href="<%= content.hero.ctaPrimary.href %>" class="btn btn-terracotta">
+          <%= content.hero.ctaPrimary.label %>
+        </a>
+        <a href="<%= content.hero.ctaSecondary.href %>" class="btn btn-ghost-light">
+          <%= content.hero.ctaSecondary.label %>
+        </a>
+      </div>
+
+      <div class="hero-scroll">
+        <div class="hero-scroll-line"></div>
+        <span><%= content.hero.scrollLabel %></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ MARQUEE ═══ -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <% for (let i = 0; i < 3; i++) { %>
+        <% content.marquee.forEach(function(item) { %>
+          <span class="marquee-item"><%= item %></span>
+          <span class="marquee-sep">◈</span>
+        <% }); %>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- ═══ LOOKBOOK — Brands / Visual Diary ═══ -->
+  <section class="lookbook" id="lookbook">
+    <div class="lookbook-header">
+      <p class="section-eyebrow"><%= content.lookbook.eyebrow %></p>
+      <h2 class="section-title"><em><%= content.lookbook.title %></em></h2>
+      <% if (brands.length) { %>
+        <p class="lookbook-subtitle">The brands we curate &amp; resell — handpicked for quality and style.</p>
+      <% } %>
+    </div>
+    <div class="lookbook-track-wrap">
+      <div class="lookbook-track" id="lookbook-track">
+        <% if (brands.length) { %>
+          <%/* Dynamic brands from Firebase/admin */%>
+          <% brands.forEach(function(brand, i) { %>
+            <a href="/products?brand=<%= encodeURIComponent(brand.name) %>" class="lookbook-card lookbook-card--<%= brand.color || 'green' %> lookbook-card--clickable">
+              <div class="lookbook-card-inner">
+                <!-- Decorative SVG -->
+                <svg class="lookbook-svg" viewBox="0 0 400 500" fill="none">
+                  <rect x="40" y="40" width="320" height="420" stroke="rgba(245,240,232,0.08)" stroke-width="0.5"/>
+                  <line x1="200" y1="40" x2="200" y2="460" stroke="rgba(245,240,232,0.04)" stroke-width="0.5"/>
+                  <circle cx="200" cy="250" r="80" stroke="rgba(168,196,181,0.06)" stroke-width="0.5"/>
+                </svg>
+                <% if (brand.logo) { %>
+                  <img src="<%= brand.logo %>" alt="<%= brand.name %>" class="lookbook-brand-banner">
+                <% } %>
+                <div class="lookbook-card-content">
+                  <span class="lookbook-num"><%= String(i + 1).padStart(2, '0') %></span>
+                  <h3 class="lookbook-card-title"><%= brand.name %></h3>
+                  <% if (brand.description) { %>
+                    <span class="lookbook-season"><%= brand.description.length > 50 ? brand.description.substring(0, 50) + '…' : brand.description %></span>
+                  <% } %>
+                  <span class="lookbook-brand-link">Shop <%= brand.name %> →</span>
+                </div>
+              </div>
+            </a>
+          <% }); %>
+        <% } else { %>
+          <%/* Fallback static lookbook items */%>
+          <% content.lookbook.items.forEach(function(item, i) { %>
+            <div class="lookbook-card lookbook-card--<%= item.color %>">
+              <div class="lookbook-card-inner">
+                <svg class="lookbook-svg" viewBox="0 0 400 500" fill="none">
+                  <rect x="40" y="40" width="320" height="420" stroke="rgba(245,240,232,0.08)" stroke-width="0.5"/>
+                  <line x1="200" y1="40" x2="200" y2="460" stroke="rgba(245,240,232,0.04)" stroke-width="0.5"/>
+                  <circle cx="200" cy="250" r="80" stroke="rgba(168,196,181,0.06)" stroke-width="0.5"/>
+                </svg>
+                <div class="lookbook-card-content">
+                  <span class="lookbook-num"><%= String(i + 1).padStart(2, '0') %></span>
+                  <h3 class="lookbook-card-title"><%= item.title %></h3>
+                  <span class="lookbook-season"><%= item.season %></span>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PRODUCTS ═══ -->
+  <section class="collection" id="collection">
+    <div class="collection-inner">
+      <div class="collection-header">
+        <p class="section-eyebrow">Our Products</p>
+        <h2 class="section-title"><em>Shop the Collection</em></h2>
+        <p class="section-subtitle"><%= content.collection.subtitle %></p>
+      </div>
+
+      <div class="cards">
+        <% (products.length ? products : content.collection.items).forEach(function(item, i) { %>
+          <% var isBadgeObj = item.badge && typeof item.badge === 'object'; %>
+          <% var badgeLabel = isBadgeObj ? item.badge.label : (item.badge || ''); %>
+          <% var badgeStyle = isBadgeObj ? item.badge.style : (item.badgeStyle || 'muted'); %>
+          <% var priceStr = typeof item.price === 'number' ? priceUsd(item.price) : item.price; %>
+          <article class="card" data-href="/products/<%= item.id %>">
+            <div class="card-img card-img--<%= item.color %>">
+              <% if (item.image) { %>
+                <img src="<%= item.image %>" alt="<%= item.title %>" class="card-photo" loading="lazy">
+              <% } %>
+              <!-- Wipe reveal curtain -->
+              <div class="card-wipe"></div>
+              <div class="card-img-label"><%= item.meta %></div>
+              <div class="card-img-overlay">
+                <p class="card-img-desc"><%= item.desc %></p>
+              </div>
+            </div>
+            <div class="card-body">
+              <span class="badge badge--<%= badgeStyle %>"><%= badgeLabel %></span>
+              <h3 class="card-title"><a href="/products/<%= item.id %>"><%= item.title %></a></h3>
+              <p class="card-meta"><%= item.meta %></p>
+              <div class="card-footer">
+                <span class="card-price"><%= priceStr %></span>
+                <form action="/cart/add" method="POST" style="display:inline">
+                <input type="hidden" name="id" value="<%= item.id %>">
+                <input type="hidden" name="qty" value="1">
+                <button type="submit" class="card-btn" aria-label="Add to cart" title="Add to cart">🛍</button>
+              </form>
+              </div>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+
+      <div class="collection-cta">
+        <a href="/products" class="btn btn-secondary">View Full Collection</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Section Divider ── -->
+  <div class="section-divider">
+    <svg viewBox="0 0 1200 2" preserveAspectRatio="none">
+      <line class="divider-line" x1="0" y1="1" x2="1200" y2="1" stroke="currentColor" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <!-- ═══ EDITORIAL SPLIT ═══ -->
+  <section class="editorial" id="editorial">
+    <div class="editorial-inner">
+      <div class="editorial-left">
+        <p class="section-eyebrow"><%= content.editorial.eyebrow %></p>
+        <blockquote class="editorial-quote"><%= content.editorial.quote %></blockquote>
+        <cite class="editorial-cite"><%= content.editorial.cite %></cite>
+      </div>
+      <div class="editorial-right">
+        <div class="editorial-panel">
+          <div class="editorial-grain"></div>
+          <div class="editorial-orb"></div>
+          <p class="editorial-body"><%= content.editorial.body %></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ TESTIMONIALS ═══ -->
+  <section class="testimonials-section">
+    <div class="testimonials-inner">
+      <p class="section-eyebrow center">What People Say</p>
+      <h2 class="section-title center">From <em>Our Customers</em></h2>
+
+      <div class="testimonials-track-wrap">
+        <div class="testimonials-track" id="testimonials-track">
+          <% content.testimonials.forEach(function(t) { %>
+            <div class="testimonial-card">
+              <p class="testimonial-quote"><%= t.quote %></p>
+              <div class="testimonial-author">
+                <div class="testimonial-avatar"></div>
+                <div>
+                  <p class="testimonial-name"><%= t.author %></p>
+                  <p class="testimonial-title"><%= t.title %></p>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+        <div class="testimonials-nav">
+          <button class="t-nav-btn" id="t-prev">&#8592;</button>
+          <div class="t-dots">
+            <% content.testimonials.forEach(function(_, i) { %>
+              <span class="t-dot <%= i === 0 ? 'active' : '' %>" data-idx="<%= i %>"></span>
+            <% }); %>
+          </div>
+          <button class="t-nav-btn" id="t-next">&#8594;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Section Divider ── -->
+  <div class="section-divider">
+    <svg viewBox="0 0 1200 2" preserveAspectRatio="none">
+      <line class="divider-line" x1="0" y1="1" x2="1200" y2="1" stroke="currentColor" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <!-- ═══ NEWSLETTER ═══ -->
+  <section class="newsletter" id="contact-form">
+    <div class="newsletter-inner">
+      <div class="newsletter-bg">
+        <div class="newsletter-orb newsletter-orb-1"></div>
+        <div class="newsletter-orb newsletter-orb-2"></div>
+      </div>
+
+      <p class="section-eyebrow center"><%= content.newsletter.eyebrow %></p>
+      <h2 class="section-title center"><em><%= content.newsletter.title %></em></h2>
+      <p class="section-subtitle center"><%= content.newsletter.subtitle %></p>
+
+      <form class="newsletter-form" onsubmit="handleSubscribe(event)">
+        <div class="newsletter-input-wrap">
+          <input
+            type="email"
+            id="newsletter-email"
+            placeholder="<%= content.newsletter.placeholder %>"
+            aria-label="Email address"
+            required
+          >
+          <button type="submit" class="btn btn-terracotta"><%= content.newsletter.cta %></button>
+        </div>
+        <p class="newsletter-note">No spam. Ever. Unsubscribe anytime.</p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<%- include('partials/footer') %>
+
+<!-- Lenis Smooth Scroll -->
+<script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+
+<!-- GSAP CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+
+<!-- App JS -->
+<script src="/js/main.js"></script>
+
+</body>
+</html>

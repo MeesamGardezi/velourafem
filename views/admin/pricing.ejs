@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing & Delivery — paknits Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Instrument+Sans:wght@0,400;0,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body no-loader">
+  <%- include('../partials/admin-nav') %>
+
+  <div class="admin-content">
+    <div class="admin-page-header">
+      <h1 class="admin-page-title">Pricing & Delivery</h1>
+      <p class="admin-page-sub">Manage markups and delivery charges — globally and per country</p>
+    </div>
+
+    <% if (success) { %>
+      <div class="admin-alert admin-alert-success"><%= success %></div>
+    <% } %>
+    <% if (error) { %>
+      <div class="admin-alert admin-alert-error"><%= error %></div>
+    <% } %>
+
+    <form action="/admin/pricing" method="POST" class="pricing-form">
+
+      <!-- Global Defaults -->
+      <div class="pricing-section">
+        <div class="pricing-section-header">
+          <h2 class="admin-section-title">Global Defaults</h2>
+          <p class="pricing-section-desc">These apply to all countries unless overridden below.</p>
+        </div>
+
+        <div class="pricing-defaults-grid">
+          <div class="pricing-field">
+            <label for="defaultMarkup">Default Markup (%)</label>
+            <div class="pricing-input-wrap">
+              <input type="number" id="defaultMarkup" name="defaultMarkup"
+                     value="<%= pricing.defaultMarkup || 0 %>"
+                     step="0.1" min="0" max="500" class="admin-input">
+              <span class="pricing-input-suffix">%</span>
+            </div>
+            <span class="pricing-field-help">Percentage added on top of product base price</span>
+          </div>
+
+          <div class="pricing-field">
+            <label for="defaultDelivery">Default Delivery Price</label>
+            <div class="pricing-input-wrap">
+              <span class="pricing-input-prefix">USD</span>
+              <input type="number" id="defaultDelivery" name="defaultDelivery"
+                     value="<%= pricing.defaultDelivery || 0 %>"
+                     step="1" min="0" class="admin-input">
+            </div>
+            <span class="pricing-field-help">Flat delivery charge added to each order</span>
+          </div>
+
+          <div class="pricing-field">
+            <label for="freeShippingThreshold">Free Shipping Above</label>
+            <div class="pricing-input-wrap">
+              <span class="pricing-input-prefix">USD</span>
+              <input type="number" id="freeShippingThreshold" name="freeShippingThreshold"
+                     value="<%= pricing.freeShippingThreshold || 0 %>"
+                     step="1" min="0" class="admin-input">
+            </div>
+            <span class="pricing-field-help">Orders above this amount get free delivery (0 = disabled)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Country Pricing -->
+      <div class="pricing-section">
+        <div class="pricing-section-header">
+          <h2 class="admin-section-title">Country / Territory Pricing</h2>
+          <p class="pricing-section-desc">Override markup and delivery for specific countries. Enable a country to make it available for customers.</p>
+        </div>
+
+        <div class="pricing-table-wrap">
+          <table class="admin-table pricing-table">
+            <thead>
+              <tr>
+                <th class="pricing-col-enabled">Enabled</th>
+                <th class="pricing-col-country">Country</th>
+                <th class="pricing-col-code">Code</th>
+                <th class="pricing-col-currency">Currency</th>
+                <th class="pricing-col-markup">Markup (%)</th>
+                <th class="pricing-col-delivery">Delivery</th>
+                <th class="pricing-col-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% pricing.countries.forEach(function(c, i) { %>
+                <tr class="pricing-row <%= c.enabled ? 'pricing-row-active' : 'pricing-row-inactive' %>">
+                  <td class="pricing-col-enabled">
+                    <label class="pricing-toggle">
+                      <input type="hidden" name="countries[<%= i %>][code]" value="<%= c.code %>">
+                      <input type="checkbox" name="countries[<%= i %>][enabled]"
+                             <%= c.enabled ? 'checked' : '' %>
+                             class="pricing-toggle-input"
+                             onchange="this.closest('tr').className='pricing-row ' + (this.checked ? 'pricing-row-active' : 'pricing-row-inactive')">
+                      <span class="pricing-toggle-slider"></span>
+                    </label>
+                  </td>
+                  <td class="pricing-col-country">
+                    <span class="pricing-country-flag"><%= c.code %></span>
+                    <span class="pricing-country-name"><%= c.name %></span>
+                  </td>
+                  <td class="pricing-col-code"><code><%= c.code %></code></td>
+                  <td class="pricing-col-currency"><span class="admin-tag"><%= c.currency %></span></td>
+                  <td class="pricing-col-markup">
+                    <div class="pricing-input-wrap pricing-input-compact">
+                      <input type="number" name="countries[<%= i %>][markup]"
+                             value="<%= c.markup || 0 %>"
+                             step="0.1" min="0" max="500" class="admin-input pricing-input-sm">
+                      <span class="pricing-input-suffix">%</span>
+                    </div>
+                  </td>
+                  <td class="pricing-col-delivery">
+                    <div class="pricing-input-wrap pricing-input-compact">
+                      <span class="pricing-input-prefix"><%= c.currency %></span>
+                      <input type="number" name="countries[<%= i %>][delivery]"
+                             value="<%= c.delivery || 0 %>"
+                             step="1" min="0" class="admin-input pricing-input-sm">
+                    </div>
+                  </td>
+                  <td class="pricing-col-actions">
+                    <form action="/admin/pricing/remove-country" method="POST" style="display:inline"
+                          onsubmit="return confirm('Remove <%= c.name %>?')">
+                      <input type="hidden" name="code" value="<%= c.code %>">
+                      <button type="submit" class="admin-btn-delete pricing-btn-remove" title="Remove country">✕</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+
+        <% if (pricing.countries.length === 0) { %>
+          <div class="pricing-empty">
+            <p>No countries configured yet. Add one below.</p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Save Button -->
+      <div class="pricing-actions">
+        <button type="submit" class="admin-btn admin-btn-primary pricing-save-btn">
+          💾 Save All Pricing Settings
+        </button>
+      </div>
+    </form>
+
+    <!-- Add Country -->
+    <div class="pricing-section pricing-section-add">
+      <div class="pricing-section-header">
+        <h2 class="admin-section-title">➕ Add Country / Territory</h2>
+      </div>
+      <form action="/admin/pricing/add-country" method="POST" class="pricing-add-form">
+        <div class="pricing-add-row">
+          <div class="pricing-field">
+            <label for="newCode">Country Code</label>
+            <input type="text" id="newCode" name="code" placeholder="e.g. US" maxlength="2"
+                   class="admin-input" style="text-transform:uppercase" required>
+          </div>
+          <div class="pricing-field">
+            <label for="newName">Country Name</label>
+            <input type="text" id="newName" name="name" placeholder="e.g. United States"
+                   class="admin-input" required>
+          </div>
+          <div class="pricing-field">
+            <label for="newCurrency">Currency</label>
+            <input type="text" id="newCurrency" name="currency" placeholder="e.g. USD" maxlength="3"
+                   class="admin-input" style="text-transform:uppercase" required>
+          </div>
+          <div class="pricing-field pricing-field-btn">
+            <button type="submit" class="admin-btn admin-btn-secondary">Add Country</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Preview -->
+    <div class="pricing-section">
+      <div class="pricing-section-header">
+        <h2 class="admin-section-title">📊 Pricing Preview</h2>
+        <p class="pricing-section-desc">Example: A product priced at $36.00 with the current settings.</p>
+      </div>
+      <div class="pricing-preview-grid">
+        <div class="pricing-preview-card">
+          <span class="pricing-preview-label">Base Price</span>
+          <span class="pricing-preview-value"><%= usd(10000) %></span>
+        </div>
+        <div class="pricing-preview-card">
+          <span class="pricing-preview-label">+ Default Markup (<%= pricing.defaultMarkup %>%)</span>
+          <span class="pricing-preview-value"><%= usd(10000 + Math.round(10000 * (pricing.defaultMarkup / 100))) %></span>
+        </div>
+        <div class="pricing-preview-card">
+          <span class="pricing-preview-label">+ Delivery</span>
+          <span class="pricing-preview-value"><%= usd(pricing.defaultDelivery || 0) %></span>
+        </div>
+        <div class="pricing-preview-card pricing-preview-total">
+          <span class="pricing-preview-label">Customer Pays</span>
+          <span class="pricing-preview-value"><%= usd(10000 + Math.round(10000 * (pricing.defaultMarkup / 100)) + (pricing.defaultDelivery || 0)) %></span>
+        </div>
+      </div>
+
+      <% const enabled = pricing.countries.filter(c => c.enabled); %>
+      <% if (enabled.length > 0) { %>
+        <h3 class="pricing-preview-subtitle">Per-Country Breakdown</h3>
+        <div class="pricing-preview-countries">
+          <% enabled.forEach(function(c) { %>
+            <div class="pricing-preview-country">
+              <span class="pricing-preview-country-name"><%= c.name %> (<%= c.currency %>)</span>
+              <span class="pricing-preview-country-price">
+                Price: <%= c.currency %> <%= (10000 + Math.round(10000 * ((c.markup || 0) / 100))).toLocaleString() %>
+                + <%= c.currency %> <%= (c.delivery || 0).toLocaleString() %> delivery
+              </span>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>
