@@ -57,7 +57,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  cursor: none;
+  cursor: auto;
 }
 
 @media (pointer: coarse) {
@@ -377,7 +377,7 @@ body.cursor-click .cursor-dot {
   gap: 6px;
   background: none;
   border: none;
-  cursor: none;
+  cursor: pointer;
   padding: 8px;
   min-width: 44px;
   min-height: 44px;
@@ -425,7 +425,7 @@ body.cursor-click .cursor-dot {
   border: none;
   color: var(--pale-moss);
   font-size: 18px;
-  cursor: none;
+  cursor: pointer;
   transition: color var(--duration-fast), transform var(--duration-fast) var(--ease-out);
 }
 
@@ -489,7 +489,7 @@ body.cursor-click .cursor-dot {
   text-transform: uppercase;
   text-decoration: none;
   border-radius: var(--radius-sm);
-  cursor: none;
+  cursor: pointer;
   border: 1px solid transparent;
   position: relative;
   overflow: hidden;
@@ -1134,7 +1134,7 @@ body.cursor-click .cursor-dot {
   border-radius: 50%;
   width: 36px;
   height: 36px;
-  cursor: none;
+  cursor: pointer;
   color: var(--warm-taupe);
   font-size: 16px;
   display: flex;
@@ -1354,7 +1354,7 @@ body.cursor-click .cursor-dot {
   border-radius: 50%;
   width: 44px;
   height: 44px;
-  cursor: none;
+  cursor: pointer;
   font-size: 16px;
   color: var(--muted-graphite);
   display: flex;
@@ -1382,7 +1382,7 @@ body.cursor-click .cursor-dot {
   height: 6px;
   background: var(--sand-beige);
   border-radius: 50%;
-  cursor: none;
+  cursor: pointer;
   transition: all var(--duration) var(--ease-out);
 }
 
@@ -1689,7 +1689,7 @@ body.cursor-click .cursor-dot {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: none;
+  cursor: pointer;
   z-index: 100;
   opacity: 0;
   pointer-events: none;
@@ -2127,4 +2127,17 @@ a.lookbook-card--clickable:hover .lookbook-brand-link {
   .t-nav-btn { min-width: 44px; min-height: 44px; }
   .card-btn { min-width: 44px; min-height: 44px; }
   .back-to-top { min-width: 44px; min-height: 44px; }
+}
+
+/* ═══ MOBILE RESPONSIVENESS ═══ */
+@media (max-width: 768px) {
+  .nav-links, .nav-shop-btn, .nav-actions .btn { display: none !important; }
+  .nav-hamburger { display: flex !important; }
+  .shop-grid, .cards, .related-grid, .stats-grid, .process-steps, .philosophy-pillars, .footer-columns { grid-template-columns: repeat(2, 1fr) !important; }
+  .editorial-inner { flex-direction: column !important; }
+  section, .hero, .pdp-main { padding-left: 24px !important; padding-right: 24px !important; }
+}
+
+@media (max-width: 480px) {
+  .shop-grid, .cards, .related-grid, .stats-grid, .process-steps, .philosophy-pillars, .footer-columns { grid-template-columns: 1fr !important; }
 }

@@ -195,7 +195,7 @@
   }
 
   // Generic page header animation
-  const pageHeaders = document.querySelectorAll('.shop-header, .cart-header, .checkout-header, .success-inner, .pdp-grid');
+  const pageHeaders = document.querySelectorAll('.shop-header, .cart-header, .checkout-header');
   pageHeaders.forEach(h => {
     gsap.from(h.children, {
       opacity: 0, y: 30, stagger: 0.1, duration: 0.9, ease: EASE.elegant,
@@ -401,26 +401,71 @@
   }
 
   /* ════════════════════════════════
-     18. QTY BUTTONS
+     18. QTY BUTTONS & PRICE UPDATES
   ════════════════════════════════ */
-  // Product detail qty
-  const qtyInput = document.getElementById('qty');
-  const qtyMinus = document.getElementById('qty-minus');
-  const qtyPlus = document.getElementById('qty-plus');
-  if (qtyInput && qtyMinus && qtyPlus) {
-    qtyMinus.addEventListener('click', () => { if (qtyInput.value > 1) qtyInput.value = parseInt(qtyInput.value) - 1; });
-    qtyPlus.addEventListener('click', () => { if (qtyInput.value < 10) qtyInput.value = parseInt(qtyInput.value) + 1; });
+  function formatPrice(pkrAmount) {
+    const mainWrap = document.querySelector('main');
+    const markupPct = parseFloat(mainWrap && mainWrap.dataset.markup || '0');
+    const rate = parseFloat(mainWrap && mainWrap.dataset.rate || '0.0036');
+    const amountWithMarkup = pkrAmount * (1 + markupPct / 100);
+    const usdValue = amountWithMarkup * rate;
+    return '$' + usdValue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
-  // Cart qty buttons
-  document.querySelectorAll('.cart-item').forEach(item => {
-    const input = item.querySelector('.cart-qty-input');
-    const minus = item.querySelector('.qty-minus-btn');
-    const plus = item.querySelector('.qty-plus-btn');
-    if (input && minus && plus) {
-      minus.addEventListener('click', () => { if (input.value > 1) input.value = parseInt(input.value) - 1; });
-      plus.addEventListener('click', () => { if (input.value < 10) input.value = parseInt(input.value) + 1; });
+
+
+  function updateCartItemPrice(input) {
+    const item = input.closest('.cart-item');
+    if (!item) return;
+    
+    const priceEl = item.querySelector('.item-total-price');
+    if (!priceEl) return;
+
+    const unitPricePkr = parseFloat(priceEl.dataset.unitPrice) || 0;
+    const qty = parseInt(input.value) || 1;
+    const totalPkr = unitPricePkr * qty;
+
+    priceEl.textContent = formatPrice(totalPkr);
+
+    // Auto-submit form to recalculate total and shipping
+    const form = input.closest('form');
+    if (form) {
+      if (form._submitTimer) clearTimeout(form._submitTimer);
+      form._submitTimer = setTimeout(() => { form.submit(); }, 600);
     }
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.qty-btn');
+    if (!btn) return;
+
+    // Find the associated input
+    const container = btn.closest('.pdp-qty-wrap, .cart-qty-form');
+    if (!container) return;
+    
+    const input = container.querySelector('input[type="number"]');
+    if (!input) return;
+
+    const isPlus = btn.id === 'qty-plus' || btn.classList.contains('qty-plus-btn');
+    const currentVal = parseInt(input.value) || 1;
+    const max = parseInt(input.getAttribute('max')) || 99;
+    const min = parseInt(input.getAttribute('min')) || 1;
+
+    if (isPlus) {
+      if (currentVal < max) input.value = currentVal + 1;
+    } else {
+      if (currentVal > min) input.value = currentVal - 1;
+    }
+
+    // Trigger update for Cart price
+    if (input.classList.contains('cart-qty-input')) updateCartItemPrice(input);
+    
+    // Trigger change event for cart updates if needed
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+
+  document.querySelectorAll('.cart-qty-input').forEach(input => {
+    input.addEventListener('input', () => updateCartItemPrice(input));
   });
 
   /* ════════════════════════════════
@@ -443,20 +488,9 @@
           }),
         });
         const data = await res.json();
-
-        // Update cart badge
-        const badges = document.querySelectorAll('.cart-badge');
-        badges.forEach(b => { b.textContent = data.cartCount; b.style.display = 'flex'; });
-
-        // Animate button
-        btn.innerHTML = '✓ Added';
-        btn.style.pointerEvents = 'none';
-        gsap.fromTo(btn, { scale: 0.95 }, { scale: 1, duration: 0.4, ease: 'elastic.out(1, 0.7)' });
-
-        setTimeout(() => {
-          btn.innerHTML = original;
-          btn.style.pointerEvents = '';
-        }, 2000);
+        
+        // Navigate directly to cart page
+        window.location.href = '/cart';
       } catch (_) {
         form.submit();
       }
@@ -481,22 +515,22 @@
      21. MOBILE FILTER DRAWER
   ════════════════════════════════ */
   const filterToggle  = document.getElementById('mobile-filter-toggle');
-  const filterBar     = document.getElementById('shop-filters-bar');
+  const mobileFilterBar = document.getElementById('shop-filters-bar');
   const filterClose   = document.getElementById('filter-drawer-close');
   const filterApply   = document.getElementById('filter-drawer-apply');
   const filterOverlay = document.getElementById('filter-drawer-overlay');
 
   function openFilterDrawer() {
-    if (!filterBar) return;
-    filterBar.classList.add('drawer-open');
+    if (!mobileFilterBar) return;
+    mobileFilterBar.classList.add('drawer-open');
     if (filterOverlay) filterOverlay.classList.add('open');
     document.body.style.overflow = 'hidden';
     if (typeof lenis !== 'undefined') lenis.stop();
   }
 
   function closeFilterDrawer() {
-    if (!filterBar) return;
-    filterBar.classList.remove('drawer-open');
+    if (!mobileFilterBar) return;
+    mobileFilterBar.classList.remove('drawer-open');
     if (filterOverlay) filterOverlay.classList.remove('open');
     document.body.style.overflow = '';
     if (typeof lenis !== 'undefined') lenis.start();
@@ -510,7 +544,7 @@
   /* ════════════════════════════════
      22. HIDE MOBILE FILTER FAB ON SCROLL UP NEAR FILTERS
   ════════════════════════════════ */
-  if (filterToggle && filterBar) {
+  if (filterToggle && mobileFilterBar) {
     let lastY = 0;
     window.addEventListener('scroll', () => {
       const y = window.scrollY;

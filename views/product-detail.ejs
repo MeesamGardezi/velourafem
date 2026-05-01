@@ -4,7 +4,7 @@
 
 <%- include('partials/nav') %>
 
-<main class="pdp-main">
+<main class="pdp-main" data-markup="<%= pricing.defaultMarkup || 0 %>" data-rate="<%= typeof _pkrRate !== 'undefined' ? _pkrRate : 0.0036 %>">
   <!-- Breadcrumb -->
   <% const sep = '<span class="breadcrumb-sep"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l4 4-4 4"/></svg></span>'; %>
   <nav class="breadcrumb pdp-breadcrumb">
@@ -87,7 +87,7 @@
         <div class="pdp-divider"></div>
 
         <div class="pdp-price-block">
-          <p class="pdp-price"><%= priceUsd(product.price) %></p>
+          <p class="pdp-price" id="pdp-price" data-base-price="<%= product.price %>"><%= priceUsd(product.price) %></p>
           <span class="pdp-stock <%= product.inStock ? 'in-stock' : 'out-stock' %>">
             <span class="pdp-stock-dot"></span>
             <%= product.inStock ? 'In Stock' : 'Out of Stock' %>
@@ -116,7 +116,7 @@
               <button type="button" class="qty-btn" id="qty-minus">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 6h8"/></svg>
               </button>
-              <input type="number" name="qty" id="qty" value="1" min="1" max="10" class="qty-input" readonly>
+              <input type="number" name="qty" id="qty" value="1" min="1" max="99" class="qty-input">
               <button type="button" class="qty-btn" id="qty-plus">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2v8M2 6h8"/></svg>
               </button>
@@ -161,7 +161,7 @@
     <section class="related-section">
       <div class="related-header">
         <p class="section-eyebrow">You May Also Like</p>
-        <h2 class="related-title">Complete the <em class="script-heading">Look</em></h2>
+        <h2 class="related-title">You May <em class="script-heading">Like</em></h2>
       </div>
       <div class="shop-grid related-grid">
         <% related.forEach(function(p) { %>

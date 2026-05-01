@@ -1,1 +1,25 @@
-[]
+[
+  {
+    "id": 2,
+    "name": "Outfitters",
+    "description": "",
+    "website": "https://outfitters.com.pk/",
+    "scrapeUrl": "https://outfitters.com.pk/collections/men-polo-shirts?constraint=basics",
+    "color": "green",
+    "logo": null,
+    "storagePath": null,
+    "createdAt": "2026-04-30T18:59:24.138Z"
+  },
+  {
+    "firestoreId": "nI3Vf17IT9A6d3R7SVBN",
+    "id": 1,
+    "name": "caps.pk",
+    "description": "",
+    "website": "https://capsstorepk.shop/",
+    "scrapeUrl": "https://capsstorepk.shop/collections/all",
+    "color": "green",
+    "logo": null,
+    "storagePath": null,
+    "createdAt": "2026-05-01T07:45:38.218Z"
+  }
+]

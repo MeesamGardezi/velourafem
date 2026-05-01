@@ -88,24 +88,6 @@
               </div>
             </a>
           <% }); %>
-        <% } else { %>
-          <%/* Fallback static lookbook items */%>
-          <% content.lookbook.items.forEach(function(item, i) { %>
-            <div class="lookbook-card lookbook-card--<%= item.color %>">
-              <div class="lookbook-card-inner">
-                <svg class="lookbook-svg" viewBox="0 0 400 500" fill="none">
-                  <rect x="40" y="40" width="320" height="420" stroke="rgba(245,240,232,0.08)" stroke-width="0.5"/>
-                  <line x1="200" y1="40" x2="200" y2="460" stroke="rgba(245,240,232,0.04)" stroke-width="0.5"/>
-                  <circle cx="200" cy="250" r="80" stroke="rgba(168,196,181,0.06)" stroke-width="0.5"/>
-                </svg>
-                <div class="lookbook-card-content">
-                  <span class="lookbook-num"><%= String(i + 1).padStart(2, '0') %></span>
-                  <h3 class="lookbook-card-title"><%= item.title %></h3>
-                  <span class="lookbook-season"><%= item.season %></span>
-                </div>
-              </div>
-            </div>
-          <% }); %>
         <% } %>
       </div>
     </div>
@@ -147,7 +129,7 @@
                 <form action="/cart/add" method="POST" style="display:inline">
                 <input type="hidden" name="id" value="<%= item.id %>">
                 <input type="hidden" name="qty" value="1">
-                <button type="submit" class="card-btn" aria-label="Add to cart" title="Add to cart">🛍</button>
+                <button type="submit" class="card-btn" aria-label="Add to cart" title="Add to cart"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg></button>
               </form>
               </div>
             </div>

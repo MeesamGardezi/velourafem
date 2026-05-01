@@ -109,54 +109,8 @@
   });
 
   /* ═══════════════════════════════
-     5. CUSTOM CURSOR — GSAP quickTo
+     5. CUSTOM CURSOR REMOVED
   ═══════════════════════════════ */
-  const cursor    = document.getElementById('cursor');
-  const cursorDot = cursor?.querySelector('.cursor-dot');
-  const cursorRing = cursor?.querySelector('.cursor-ring');
-
-  if (cursor && window.matchMedia('(pointer: fine)').matches) {
-    const dotX  = gsap.quickTo(cursorDot, 'x', { duration: 0.15, ease: 'power2.out' });
-    const dotY  = gsap.quickTo(cursorDot, 'y', { duration: 0.15, ease: 'power2.out' });
-    const ringX = gsap.quickTo(cursorRing, 'x', { duration: 0.45, ease: 'power3.out' });
-    const ringY = gsap.quickTo(cursorRing, 'y', { duration: 0.45, ease: 'power3.out' });
-
-    document.addEventListener('mousemove', (e) => {
-      if (!cursor.style.opacity || cursor.style.opacity === '0') {
-        cursor.style.opacity = '1';
-      }
-      dotX(e.clientX);
-      dotY(e.clientY);
-      ringX(e.clientX);
-      ringY(e.clientY);
-    });
-
-    // Hide cursor when mouse leaves the window to prevent it getting stuck
-    document.addEventListener('mouseleave', () => {
-      cursor.style.opacity = '0';
-      document.body.classList.remove('cursor-hover', 'cursor-click');
-    });
-
-    document.addEventListener('mouseenter', () => {
-      cursor.style.opacity = '1';
-    });
-
-    // Use event delegation for hover state to handle dynamic elements
-    document.addEventListener('mouseover', (e) => {
-      if (e.target.closest('a, button, .card, .pillar, .t-dot, .t-nav-btn, .nav-hamburger, input, .lookbook-card')) {
-        document.body.classList.add('cursor-hover');
-      }
-    });
-
-    document.addEventListener('mouseout', (e) => {
-      if (e.target.closest('a, button, .card, .pillar, .t-dot, .t-nav-btn, .nav-hamburger, input, .lookbook-card')) {
-        document.body.classList.remove('cursor-hover');
-      }
-    });
-
-    document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
-    document.addEventListener('mouseup', () => document.body.classList.remove('cursor-click'));
-  }
 
   /* ═══════════════════════════════
      5b. CARD — Full card click
@@ -647,5 +601,50 @@
 
   splitWords('.hero-title-line');
   splitWords('.hero-title-script');
+
+  /* ═══════════════════════════════
+     16. QUANTITY INCREMENT/DECREMENT
+  ═══════════════════════════════ */
+  let _cartSubmitTimer = null;
+
+  document.addEventListener('click', (e) => {
+    const minusBtn = e.target.closest('.qty-minus-btn') || e.target.closest('#qty-minus');
+    const plusBtn  = e.target.closest('.qty-plus-btn')  || e.target.closest('#qty-plus');
+    const btn = minusBtn || plusBtn;
+    if (!btn) return;
+
+    const form  = btn.closest('form');
+    const input = form ? form.querySelector('input[type="number"]') : btn.parentElement.querySelector('input[type="number"]');
+    if (!input) return;
+
+    let val = parseInt(input.value) || 1;
+    const min = parseInt(input.min) || 1;
+    const max = parseInt(input.max) || 99;
+
+    if (minusBtn && val > min) val--;
+    if (plusBtn  && val < max) val++;
+    input.value = val;
+
+    // ── Dynamic line-total update for cart ──────────────────────
+    if (form && form.classList.contains('cart-qty-form')) {
+      // find the sibling .item-total-price element for this cart row
+      const cartItem = form.closest('.cart-item');
+      if (cartItem) {
+        const priceEl = cartItem.querySelector('.item-total-price');
+        if (priceEl) {
+          const unitPkr = parseFloat(priceEl.dataset.unitPrice) || 0;
+          const cartMain = document.querySelector('.cart-main');
+          const markupPct = parseFloat(cartMain && cartMain.dataset.markup || '0');
+          const rate      = parseFloat(cartMain && cartMain.dataset.rate  || '0.0036');
+          const unitWithMarkup = unitPkr * (1 + markupPct / 100);
+          const lineUsd = (unitWithMarkup * val * rate).toFixed(2);
+          priceEl.textContent = '$' + lineUsd.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+      }
+      // Auto-submit after 600 ms debounce so cart totals stay accurate
+      clearTimeout(_cartSubmitTimer);
+      _cartSubmitTimer = setTimeout(() => { if (form) form.submit(); }, 600);
+    }
+  });
 
 })();

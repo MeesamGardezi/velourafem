@@ -177,9 +177,9 @@
 <script>
 (function() {
   // Initialise Paddle
-  <% if (paddleEnv === 'sandbox') { %>
-  Paddle.Environment.set('sandbox');
-  <% } %>
+  // <% if (paddleEnv === 'sandbox') { %>
+  // Paddle.Environment.set('sandbox');
+  // <% } %>
   Paddle.Initialize({ token: '<%= paddleClientToken %>' });
 
   const form = document.querySelector('.checkout-form');

@@ -9,11 +9,10 @@ module.exports = {
   },
 
   nav: [
+    { label: 'Home', href: '/' },
     { label: 'Shop', href: '/products' },
-    { label: 'Collection', href: '/products' },
-    { label: 'Philosophy', href: '/philosophy' },
     { label: 'Track Order', href: '/orders/track' },
-    { label: 'Contact', href: '/#contact' },
+    { label: 'Contact', href: '/contact' },
   ],
 
   hero: {
@@ -22,7 +21,7 @@ module.exports = {
     headlineAccent: 'Sets the standard.',
     subheadline: 'Well-made clothes for people who already know what they like. No hype, no gimmicks — just good design that lasts.',
     ctaPrimary: { label: 'Explore Collection', href: '/products' },
-    ctaSecondary: { label: 'Our Philosophy', href: '/philosophy' },
+    ctaSecondary: { label: 'Contact Us', href: '/contact' },
     scrollLabel: 'Scroll to discover',
   },
 
@@ -217,7 +216,6 @@ module.exports = {
         heading: 'Brand',
         links: [
           { label: 'Our Story', href: '/#story' },
-          { label: 'Philosophy', href: '/philosophy' },
         ],
       },
       {
@@ -225,7 +223,7 @@ module.exports = {
         links: [
           { label: 'Track My Order', href: '/orders/track' },
           { label: 'Cart', href: '/cart' },
-          { label: 'Contact', href: '/#contact' },
+          { label: 'Contact', href: '/contact' },
         ],
       },
       {
