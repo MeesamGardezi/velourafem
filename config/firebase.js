@@ -19,12 +19,16 @@ let initialised = false;
 function init() {
   if (initialised) return;
 
-  // 1) Try loading serviceAccount.json from project root
-  const saPath = path.join(__dirname, '..', 'serviceAccount.json');
+  // 1) Try loading serviceAccount.json from project root or config directory
+  const rootPath = path.join(__dirname, '..', 'serviceAccount.json');
+  const configPath = path.join(__dirname, 'serviceAccount.json');
+  const saPath = fs.existsSync(configPath) ? configPath : rootPath;
+  
   let credential = null;
   let projectId  = null;
 
   if (fs.existsSync(saPath)) {
+    console.log(`✓ Loading Firebase credentials from: ${saPath}`);
     const sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
     credential = admin.credential.cert(sa);
     projectId  = sa.project_id;

@@ -412,6 +412,27 @@ async function fetchAllPages(startUrl) {
       if (nextUrl) console.log(`  [pagination] AI found next page: ${nextUrl}`);
     }
 
+    // --- SFCC Custom Pagination Injection ---
+    if (!nextUrl) {
+      const totalEl = $('[data-total], .total-count, [data-total-count], .results-count, .result-count, .search-result-count');
+      if (totalEl.length) {
+        let totalCountText = totalEl.attr('data-total') || totalEl.attr('data-total-count') || totalEl.text() || '';
+        const totalCount = parseInt(totalCountText.replace(/\D/g, ''), 10);
+        if (!isNaN(totalCount) && totalCount > allProducts.length && fresh.length > 0) {
+          try {
+            const u = new URL(startUrl);
+            u.searchParams.set('sz', '500');
+            u.searchParams.set('start', allProducts.length.toString());
+            nextUrl = u.toString();
+            console.log(`  [pagination] SFCC/Custom detected. Total: ${totalCount}. Next start: ${allProducts.length}`);
+          } catch (e) {
+            // URL parse error, ignore
+          }
+        }
+      }
+    }
+    // ----------------------------------------
+
     if (!nextUrl) break;
     currentUrl = nextUrl;
     page++;

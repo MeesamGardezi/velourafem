@@ -116,10 +116,16 @@
         <!-- Payment -->
         <div class="order-detail-card">
           <h3>Payment</h3>
-          <div class="order-detail-row"><span>Method</span><span><%= detailOrder.paymentMethod === 'card' ? '💳 Card (Paddle)' : detailOrder.paymentMethod %></span></div>
+          <div class="order-detail-row"><span>Method</span><span>
+            <% if (detailOrder.paymentMethod === 'card') { %>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg> Card (Paddle)
+            <% } else { %>
+              <%= detailOrder.paymentMethod %>
+            <% } %>
+          </span></div>
           <% if (detailOrder.paddleTransactionId) { %><div class="order-detail-row"><span>Paddle Txn</span><span style="font-size:0.8rem;word-break:break-all"><%= detailOrder.paddleTransactionId %></span></div><% } %>
-          <div class="order-detail-row"><span>Subtotal</span><span><%= usd(detailOrder.subtotal || 0) %></span></div>
-          <div class="order-detail-row"><span>Shipping</span><span><%= detailOrder.delivery > 0 ? usd(detailOrder.delivery) : 'Free' %></span></div>
+          <div class="order-detail-row"><span>Subtotal</span><span><%= usd((detailOrder.subtotal || 0) + (detailOrder.markup || 0)) %></span></div>
+          <div class="order-detail-row"><span>Shipping</span><span><%= (detailOrder.delivery || 0) > 0 ? usd(detailOrder.delivery) : 'Free' %></span></div>
           <div class="order-detail-row" style="font-weight:700"><span>Total</span><span><%= usd(detailOrder.total || 0) %></span></div>
         </div>
 
@@ -159,15 +165,19 @@
             </tr>
           </thead>
           <tbody>
-            <% (detailOrder.items || []).forEach(function(item) { %>
-              <tr>
-                <td><img src="<%= item.image %>" alt="<%= item.title %>" class="order-item-thumb"></td>
-                <td><%= item.title %></td>
-                <td><%= item.qty %></td>
-                <td><%= usd(item.price) %></td>
-                <td><%= usd(item.price * item.qty) %></td>
-              </tr>
-            <% }); %>
+            <% if (detailOrder.items && detailOrder.items.length) { %>
+              <% detailOrder.items.forEach(function(item) { %>
+                <tr>
+                  <td><img src="<%= item.image %>" alt="<%= item.title %>" class="order-item-thumb"></td>
+                  <td><%= item.title %></td>
+                  <td><%= item.qty %></td>
+                  <td><%= priceUsd(item.price) %></td>
+                  <td><%= priceUsd((item.price || 0) * (item.qty || 1)) %></td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr><td colspan="5" style="text-align:center;padding:24px;color:#9ca3af">No items found for this order.</td></tr>
+            <% } %>
           </tbody>
         </table>
       </div>
@@ -252,7 +262,13 @@
                   </td>
                   <td><%= (o.items || []).length %> item<%= (o.items || []).length !== 1 ? 's' : '' %></td>
                   <td><strong><%= usd(o.total || 0) %></strong></td>
-                  <td style="font-size:0.82rem"><%= o.paymentMethod === 'card' ? '💳 Card' : o.paymentMethod %></td>
+                  <td style="font-size:0.82rem">
+                    <% if (o.paymentMethod === 'card') { %>
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg> Card
+                    <% } else { %>
+                      <%= o.paymentMethod %>
+                    <% } %>
+                  </td>
                   <td><span class="order-status-badge status-<%= o.status || 'pending' %>"><%= o.status || 'pending' %></span></td>
                   <td class="admin-actions">
                     <a href="/admin/orders/<%= o.firestoreId %>" class="admin-btn-edit">View</a>

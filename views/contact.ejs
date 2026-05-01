@@ -1,0 +1,85 @@
+<% const pageTitle = 'Contact Us — ' + content.brand.name; %>
+<% const pageDescription = 'Get in touch with us for any inquiries or support.'; %>
+<%- include('partials/shop-head') %>
+
+<%- include('partials/nav') %>
+
+<main style="min-height:70vh;padding:60px 0">
+  <div style="max-width:680px;margin:0 auto;padding:0 24px">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb shop-breadcrumb" style="margin-bottom:32px">
+      <a href="/">Home</a>
+      <span class="breadcrumb-sep">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l4 4-4 4"/></svg>
+      </span>
+      <span class="breadcrumb-current">Contact Us</span>
+    </nav>
+
+    <p class="section-eyebrow">Get in touch</p>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,2.8rem);font-weight:400;margin:0 0 8px">
+      Contact <em class="script-heading">Us</em>
+    </h1>
+    <p style="color:#888;margin:0 0 36px;font-size:0.95rem">
+      Have a question or need assistance? Drop us a line below and we'll get back to you as soon as possible.
+    </p>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+    <!-- Success Banner -->
+    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:14px;margin-bottom:28px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      <div>
+        <p style="font-weight:600;color:#15803d;margin:0 0 2px">Message sent!</p>
+        <p style="color:#166534;font-size:0.88rem;margin:0">Thanks for reaching out. We'll get back to you as soon as possible.</p>
+      </div>
+    </div>
+    <% } %>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+    <!-- Error Banner -->
+    <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      <p style="color:#dc2626;margin:0;font-size:0.92rem"><%= error %></p>
+    </div>
+    <% } %>
+
+    <!-- Contact Form -->
+    <% if (typeof success === 'undefined' || !success) { %>
+    <form action="/contact" method="POST" style="background:#faf8f5;border:1px solid #e8e0d8;border-radius:14px;padding:28px;margin-bottom:32px">
+      
+      <div class="form-row" style="margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group" style="display:flex;flex-direction:column;gap:8px">
+          <label for="name" style="font-size:0.9rem;font-weight:600;text-transform:uppercase;letter-spacing:1px">Name <span class="required" style="color:#e11d48">*</span></label>
+          <input type="text" id="name" name="name" required placeholder="Jane Doe" style="padding:12px;border:1px solid #e8e0d8;border-radius:8px;font-family:inherit;font-size:1rem;background:#fff;outline:none">
+        </div>
+        <div class="form-group" style="display:flex;flex-direction:column;gap:8px">
+          <label for="email" style="font-size:0.9rem;font-weight:600;text-transform:uppercase;letter-spacing:1px">Email Address <span class="required" style="color:#e11d48">*</span></label>
+          <input type="email" id="email" name="email" required placeholder="you@example.com" style="padding:12px;border:1px solid #e8e0d8;border-radius:8px;font-family:inherit;font-size:1rem;background:#fff;outline:none">
+        </div>
+      </div>
+      
+      <div class="form-group" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+        <label for="message" style="font-size:0.9rem;font-weight:600;text-transform:uppercase;letter-spacing:1px">Message <span class="required" style="color:#e11d48">*</span></label>
+        <textarea id="message" name="message" rows="6" required placeholder="How can we help?" style="padding:12px;border:1px solid #e8e0d8;border-radius:8px;font-family:inherit;font-size:1rem;background:#fff;outline:none;resize:vertical"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-terracotta" style="width:100%">Send Message</button>
+    </form>
+    <% } %>
+
+    <!-- Help -->
+    <div style="margin-top:32px;text-align:center">
+      <p style="font-size:0.88rem;color:#9ca3af">
+        Prefer email? Reach us directly at
+        <a href="mailto:<%= content.brand.email || 'support@' + content.brand.name.toLowerCase().replace(/\s+/g,'-') + '.com' %>" style="color:inherit;font-weight:600"><%= content.brand.email || 'support@paknits.com' %></a>
+      </p>
+    </div>
+
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/shop-foot') %>
+

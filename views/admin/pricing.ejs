@@ -126,11 +126,7 @@
                     </div>
                   </td>
                   <td class="pricing-col-actions">
-                    <form action="/admin/pricing/remove-country" method="POST" style="display:inline"
-                          onsubmit="return confirm('Remove <%= c.name %>?')">
-                      <input type="hidden" name="code" value="<%= c.code %>">
-                      <button type="submit" class="admin-btn-delete pricing-btn-remove" title="Remove country">✕</button>
-                    </form>
+                    <button type="submit" form="remove-country-<%= c.code %>" class="admin-btn-delete pricing-btn-remove" title="Remove country" onclick="return confirm('Remove <%= c.name %>?')">✕</button>
                   </td>
                 </tr>
               <% }); %>
@@ -152,6 +148,12 @@
         </button>
       </div>
     </form>
+
+    <% pricing.countries.forEach(function(c) { %>
+      <form id="remove-country-<%= c.code %>" action="/admin/pricing/remove-country" method="POST" style="display:none">
+        <input type="hidden" name="code" value="<%= c.code %>">
+      </form>
+    <% }); %>
 
     <!-- Add Country -->
     <div class="pricing-section pricing-section-add">

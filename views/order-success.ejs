@@ -16,6 +16,24 @@
       <div class="success-particle"></div>
     </div>
 
+    <!-- Progress Steps -->
+    <div class="checkout-progress" style="margin-bottom: 40px;">
+      <div class="checkout-step completed">
+        <span class="checkout-step-num">1</span>
+        <span class="checkout-step-label">Cart</span>
+      </div>
+      <div class="checkout-step-line active"></div>
+      <div class="checkout-step completed">
+        <span class="checkout-step-num">2</span>
+        <span class="checkout-step-label">Checkout</span>
+      </div>
+      <div class="checkout-step-line active"></div>
+      <div class="checkout-step active">
+        <span class="checkout-step-num">3</span>
+        <span class="checkout-step-label">Confirmation</span>
+      </div>
+    </div>
+
     <div class="success-icon">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
@@ -59,7 +77,15 @@
           <span class="checkout-item-price"><%= priceUsd(item.price * item.qty) %></span>
         </div>
       <% }); %>
-      <div class="success-total-row">
+      <div class="success-total-row" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(26,58,47,0.05); font-weight: 400; font-size: 0.85rem; color: var(--warm-taupe);">
+        <span>Subtotal</span>
+        <span><%= usd((order.subtotal || 0) + (order.markup || 0)) %></span>
+      </div>
+      <div class="success-total-row" style="font-weight: 400; font-size: 0.85rem; color: var(--warm-taupe); margin-bottom: 8px;">
+        <span>Shipping</span>
+        <span><%= (order.delivery || 0) > 0 ? usd(order.delivery) : 'Free' %></span>
+      </div>
+      <div class="success-total-row" style="border-top: 1px solid rgba(26,58,47,0.1); padding-top: 12px; margin-top: 4px;">
         <span>Order Total</span>
         <strong><%= usd(order.total) %></strong>
       </div>

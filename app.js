@@ -119,6 +119,7 @@ const PRODUCTS_PATH   = path.join(__dirname, 'data/products.json');
 const CATALOGUES_PATH = path.join(__dirname, 'data/catalogues.json');
 const BRANDS_PATH     = path.join(__dirname, 'data/brands.json');
 const PRICING_PATH    = path.join(__dirname, 'data/pricing.json');
+const ORDERS_PATH     = path.join(__dirname, 'data/orders.json');
 
 // ── In-memory cache (TTL-based) ──────────────────────────────────
 const CACHE_TTL = 2 * 60 * 1000; // 2 minutes
@@ -178,13 +179,17 @@ async function getProducts() {
       const snap = await db.collection('products').orderBy('id').get();
       products = snap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
     } catch (e) {
-      console.warn('Product orderBy failed, fetching unordered:', e.message);
-      const snap = await db.collection('products').get();
-      products = snap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
-      products.sort((a, b) => (a.id || 0) - (b.id || 0));
+      if (e.code === 8) {
+        console.warn('[getProducts] Firestore quota exhausted — falling back to JSON');
+      } else {
+        console.warn('[getProducts] Firestore fetch failed — falling back to JSON:', e.message);
+      }
     }
-  } else {
+  }
+
+  if (!products) {
     products = JSON.parse(fs.readFileSync(PRODUCTS_PATH, 'utf-8'));
+    console.log('[getProducts] Loaded', products.length, 'products from JSON fallback');
   }
 
   cache.products = { data: products, ts: Date.now() };
@@ -195,46 +200,80 @@ async function getProducts() {
 async function getProductById(id) {
   const db = firebase.getDb();
   if (db) {
-    const snap = await db.collection('products').where('id', '==', Number(id)).limit(1).get();
-    if (snap.empty) return null;
-    const doc = snap.docs[0];
-    return { firestoreId: doc.id, ...doc.data() };
+    try {
+      const snap = await db.collection('products').where('id', '==', Number(id)).limit(1).get();
+      if (!snap.empty) {
+        const doc = snap.docs[0];
+        return { firestoreId: doc.id, ...doc.data() };
+      }
+    } catch (e) {
+      console.warn('[getProductById] Firestore failed — falling back to JSON:', e.message);
+    }
   }
   const products = JSON.parse(fs.readFileSync(PRODUCTS_PATH, 'utf-8'));
   return products.find(p => p.id === Number(id)) || null;
 }
 
 async function saveProduct(data) {
+  console.log('[saveProduct] Starting save for product ID:', data.id);
   const db = firebase.getDb();
   if (db) {
-    if (data.firestoreId) {
-      const { firestoreId, ...rest } = data;
-      await db.collection('products').doc(firestoreId).set(rest, { merge: true });
-    } else {
-      await db.collection('products').add(data);
+    try {
+      if (data.firestoreId) {
+        const { firestoreId, ...rest } = data;
+        await db.collection('products').doc(firestoreId).set(rest, { merge: true });
+        console.log('[saveProduct] Successfully updated Firestore doc:', firestoreId);
+      } else {
+        const ref = await db.collection('products').add(data);
+        console.log('[saveProduct] Successfully added to Firestore with doc ID:', ref.id);
+      }
+    } catch (err) {
+      console.error('[saveProduct] Firestore save failed:', err.message);
     }
-    invalidateCache('products');
-    return;
+  } else {
+    console.log('[saveProduct] Firestore not available, skipping cloud save');
   }
-  const products = JSON.parse(fs.readFileSync(PRODUCTS_PATH, 'utf-8'));
-  const idx = products.findIndex(p => p.id === data.id);
-  if (idx >= 0) products[idx] = data; else products.push(data);
-  fs.writeFileSync(PRODUCTS_PATH, JSON.stringify(products, null, 2));
+
+  try {
+    const products = JSON.parse(fs.readFileSync(PRODUCTS_PATH, 'utf-8'));
+    const idx = products.findIndex(p => p.id === data.id);
+    if (idx >= 0) products[idx] = data; else products.push(data);
+    fs.writeFileSync(PRODUCTS_PATH, JSON.stringify(products, null, 2));
+    console.log('[saveProduct] Successfully saved to JSON fallback');
+  } catch (err) {
+    console.error('[saveProduct] JSON fallback save failed:', err.message);
+  }
+
   invalidateCache('products');
+  console.log('[saveProduct] Completed.');
 }
 
 async function deleteProduct(id) {
+  console.log('[deleteProduct] Starting delete for product ID:', id);
   const db = firebase.getDb();
   if (db) {
-    const snap = await db.collection('products').where('id', '==', Number(id)).limit(1).get();
-    if (!snap.empty) await snap.docs[0].ref.delete();
-    invalidateCache('products');
-    return;
+    try {
+      const snap = await db.collection('products').where('id', '==', Number(id)).limit(1).get();
+      if (!snap.empty) {
+        await snap.docs[0].ref.delete();
+        console.log('[deleteProduct] Successfully deleted from Firestore');
+      }
+    } catch (err) {
+      console.error('[deleteProduct] Firestore delete failed:', err.message);
+    }
   }
-  const products = JSON.parse(fs.readFileSync(PRODUCTS_PATH, 'utf-8'));
-  const filtered = products.filter(p => p.id !== Number(id));
-  fs.writeFileSync(PRODUCTS_PATH, JSON.stringify(filtered, null, 2));
+
+  try {
+    const products = JSON.parse(fs.readFileSync(PRODUCTS_PATH, 'utf-8'));
+    const filtered = products.filter(p => p.id !== Number(id));
+    fs.writeFileSync(PRODUCTS_PATH, JSON.stringify(filtered, null, 2));
+    console.log('[deleteProduct] Successfully deleted from JSON fallback');
+  } catch (err) {
+    console.error('[deleteProduct] JSON fallback delete failed:', err.message);
+  }
+
   invalidateCache('products');
+  console.log('[deleteProduct] Completed.');
 }
 
 async function nextProductId() {
@@ -253,13 +292,12 @@ async function getCatalogues() {
       const snap = await db.collection('catalogues').orderBy('uploadedAt', 'desc').get();
       catalogues = snap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
     } catch (e) {
-      console.warn('Catalogue orderBy failed, fetching unordered:', e.message);
-      const snap = await db.collection('catalogues').get();
-      catalogues = snap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
-      catalogues.sort((a, b) => (b.uploadedAt || '').localeCompare(a.uploadedAt || ''));
+      console.warn('[getCatalogues] Firestore failed — falling back to JSON:', e.message);
     }
-  } else {
-    catalogues = JSON.parse(fs.readFileSync(CATALOGUES_PATH, 'utf8'));
+  }
+
+  if (!catalogues) {
+    catalogues = fs.existsSync(CATALOGUES_PATH) ? JSON.parse(fs.readFileSync(CATALOGUES_PATH, 'utf8')) : [];
   }
 
   cache.catalogues = { data: catalogues, ts: Date.now() };
@@ -267,34 +305,59 @@ async function getCatalogues() {
 }
 
 async function saveCatalogue(data) {
+  console.log('[saveCatalogue] Starting save for catalogue ID:', data.id);
   const db = firebase.getDb();
   if (db) {
-    await db.collection('catalogues').add(data);
-    invalidateCache('catalogues');
-    return;
+    try {
+      const ref = await db.collection('catalogues').add(data);
+      console.log('[saveCatalogue] Successfully added to Firestore with doc ID:', ref.id);
+    } catch (err) {
+      console.error('[saveCatalogue] Firestore save failed:', err.message);
+    }
   }
-  const cats = JSON.parse(fs.readFileSync(CATALOGUES_PATH, 'utf8'));
-  cats.push(data);
-  fs.writeFileSync(CATALOGUES_PATH, JSON.stringify(cats, null, 2));
+
+  try {
+    const cats = JSON.parse(fs.readFileSync(CATALOGUES_PATH, 'utf8'));
+    cats.push(data);
+    fs.writeFileSync(CATALOGUES_PATH, JSON.stringify(cats, null, 2));
+    console.log('[saveCatalogue] Successfully saved to JSON fallback');
+  } catch (err) {
+    console.error('[saveCatalogue] JSON fallback save failed:', err.message);
+  }
+
   invalidateCache('catalogues');
+  console.log('[saveCatalogue] Completed.');
 }
 
 async function deleteCatalogue(firestoreIdOrJsonId) {
+  console.log('[deleteCatalogue] Starting delete for ID:', firestoreIdOrJsonId);
   const db = firebase.getDb();
   if (db) {
-    await db.collection('catalogues').doc(String(firestoreIdOrJsonId)).delete();
-    invalidateCache('catalogues');
-    return;
+    try {
+      await db.collection('catalogues').doc(String(firestoreIdOrJsonId)).delete();
+      console.log('[deleteCatalogue] Successfully deleted from Firestore');
+    } catch (err) {
+      console.error('[deleteCatalogue] Firestore delete failed:', err.message);
+    }
   }
-  let cats = JSON.parse(fs.readFileSync(CATALOGUES_PATH, 'utf8'));
-  const cat = cats.find(c => c.id === Number(firestoreIdOrJsonId));
-  if (cat) {
-    const fp = path.join(__dirname, 'public/uploads/catalogues', cat.filename);
-    if (fs.existsSync(fp)) fs.unlinkSync(fp);
+
+  try {
+    let cats = JSON.parse(fs.readFileSync(CATALOGUES_PATH, 'utf8'));
+    const cat = cats.find(c => c.id === Number(firestoreIdOrJsonId));
+    if (cat) {
+      const fp = path.join(__dirname, 'public/uploads/catalogues', cat.filename);
+      if (fs.existsSync(fp)) fs.unlinkSync(fp);
+      console.log('[deleteCatalogue] Local file unlinked');
+    }
+    cats = cats.filter(c => c.id !== Number(firestoreIdOrJsonId));
+    fs.writeFileSync(CATALOGUES_PATH, JSON.stringify(cats, null, 2));
+    console.log('[deleteCatalogue] Successfully deleted from JSON fallback');
+  } catch (err) {
+    console.error('[deleteCatalogue] JSON fallback delete failed:', err.message);
   }
-  cats = cats.filter(c => c.id !== Number(firestoreIdOrJsonId));
-  fs.writeFileSync(CATALOGUES_PATH, JSON.stringify(cats, null, 2));
+
   invalidateCache('catalogues');
+  console.log('[deleteCatalogue] Completed.');
 }
 
 // ── Brands ───────────────────────────────────────────────────────
@@ -308,13 +371,12 @@ async function getBrands() {
       const snap = await db.collection('brands').orderBy('name').get();
       brands = snap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
     } catch (e) {
-      console.warn('Brand orderBy failed, fetching unordered:', e.message);
-      const snap = await db.collection('brands').get();
-      brands = snap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
-      brands.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      console.warn('[getBrands] Firestore failed — falling back to JSON:', e.message);
     }
-  } else {
-    brands = JSON.parse(fs.readFileSync(BRANDS_PATH, 'utf-8'));
+  }
+
+  if (!brands) {
+    brands = fs.existsSync(BRANDS_PATH) ? JSON.parse(fs.readFileSync(BRANDS_PATH, 'utf-8')) : [];
   }
 
   cache.brands = { data: brands, ts: Date.now() };
@@ -324,47 +386,119 @@ async function getBrands() {
 async function getBrandById(id) {
   const db = firebase.getDb();
   if (db) {
-    const snap = await db.collection('brands').where('id', '==', Number(id)).limit(1).get();
-    if (snap.empty) return null;
-    const doc = snap.docs[0];
-    return { firestoreId: doc.id, ...doc.data() };
+    try {
+      const snap = await db.collection('brands').where('id', '==', Number(id)).limit(1).get();
+      if (!snap.empty) {
+        const doc = snap.docs[0];
+        return { firestoreId: doc.id, ...doc.data() };
+      }
+    } catch (e) {
+      console.warn('[getBrandById] Firestore failed — falling back to JSON:', e.message);
+    }
   }
   const brands = JSON.parse(fs.readFileSync(BRANDS_PATH, 'utf-8'));
   return brands.find(b => b.id === Number(id)) || null;
 }
 
 async function saveBrand(data) {
+  console.log('[saveBrand] Starting save for brand ID:', data.id);
   const db = firebase.getDb();
   if (db) {
-    if (data.firestoreId) {
-      const { firestoreId, ...rest } = data;
-      await db.collection('brands').doc(firestoreId).set(rest, { merge: true });
-    } else {
-      await db.collection('brands').add(data);
+    try {
+      if (data.firestoreId) {
+        const { firestoreId, ...rest } = data;
+        await db.collection('brands').doc(firestoreId).set(rest, { merge: true });
+        console.log('[saveBrand] Successfully updated Firestore doc:', firestoreId);
+      } else {
+        const ref = await db.collection('brands').add(data);
+        console.log('[saveBrand] Successfully added to Firestore with doc ID:', ref.id);
+      }
+    } catch (err) {
+      console.error('[saveBrand] Firestore save failed:', err.message);
     }
-    invalidateCache('brands');
-    return;
   }
-  const brands = JSON.parse(fs.readFileSync(BRANDS_PATH, 'utf-8'));
-  const idx = brands.findIndex(b => b.id === data.id);
-  if (idx >= 0) brands[idx] = data; else brands.push(data);
-  fs.writeFileSync(BRANDS_PATH, JSON.stringify(brands, null, 2));
+
+  try {
+    const brands = JSON.parse(fs.readFileSync(BRANDS_PATH, 'utf-8'));
+    const idx = brands.findIndex(b => b.id === data.id);
+    if (idx >= 0) brands[idx] = data; else brands.push(data);
+    fs.writeFileSync(BRANDS_PATH, JSON.stringify(brands, null, 2));
+    console.log('[saveBrand] Successfully saved to JSON fallback');
+  } catch (err) {
+    console.error('[saveBrand] JSON fallback save failed:', err.message);
+  }
+
   invalidateCache('brands');
+  console.log('[saveBrand] Completed.');
 }
 
 async function deleteBrand(id) {
+  const numId = Number(id);
+  console.log('[deleteBrand] Starting delete for brand ID:', numId);
+
   const db = firebase.getDb();
+
+  // ── 1. Delete linked products ──────────────────────────────────
+  console.log('[deleteBrand] Deleting linked products for brandId:', numId);
   if (db) {
-    const snap = await db.collection('brands').where('id', '==', Number(id)).limit(1).get();
-    if (!snap.empty) await snap.docs[0].ref.delete();
-    invalidateCache('brands');
-    return;
+    try {
+      const prodSnap = await db.collection('products').where('brandId', '==', numId).get();
+      if (!prodSnap.empty) {
+        // Batch-delete in chunks of 450
+        const BATCH_SIZE = 450;
+        const docs = prodSnap.docs;
+        for (let i = 0; i < docs.length; i += BATCH_SIZE) {
+          const batch = db.batch();
+          docs.slice(i, i + BATCH_SIZE).forEach(d => batch.delete(d.ref));
+          await batch.commit();
+        }
+        console.log(`[deleteBrand] Deleted ${docs.length} linked products from Firestore`);
+      } else {
+        console.log('[deleteBrand] No linked products found in Firestore');
+      }
+    } catch (err) {
+      console.error('[deleteBrand] Firestore product delete failed:', err.message);
+    }
   }
-  const brands = JSON.parse(fs.readFileSync(BRANDS_PATH, 'utf-8'));
-  const filtered = brands.filter(b => b.id !== Number(id));
-  fs.writeFileSync(BRANDS_PATH, JSON.stringify(filtered, null, 2));
+
+  try {
+    const products = JSON.parse(fs.readFileSync(PRODUCTS_PATH, 'utf-8'));
+    const before = products.length;
+    const filtered = products.filter(p => p.brandId !== numId);
+    fs.writeFileSync(PRODUCTS_PATH, JSON.stringify(filtered, null, 2));
+    console.log(`[deleteBrand] Removed ${before - filtered.length} linked products from JSON fallback`);
+  } catch (err) {
+    console.error('[deleteBrand] JSON product delete failed:', err.message);
+  }
+
+  invalidateCache('products');
+
+  // ── 2. Delete the brand itself ─────────────────────────────────
+  if (db) {
+    try {
+      const snap = await db.collection('brands').where('id', '==', numId).limit(1).get();
+      if (!snap.empty) {
+        await snap.docs[0].ref.delete();
+        console.log('[deleteBrand] Successfully deleted brand from Firestore');
+      }
+    } catch (err) {
+      console.error('[deleteBrand] Firestore brand delete failed:', err.message);
+    }
+  }
+
+  try {
+    const brands = JSON.parse(fs.readFileSync(BRANDS_PATH, 'utf-8'));
+    const filtered = brands.filter(b => b.id !== numId);
+    fs.writeFileSync(BRANDS_PATH, JSON.stringify(filtered, null, 2));
+    console.log('[deleteBrand] Successfully deleted brand from JSON fallback');
+  } catch (err) {
+    console.error('[deleteBrand] JSON fallback brand delete failed:', err.message);
+  }
+
   invalidateCache('brands');
+  console.log('[deleteBrand] Completed (brand + all linked products removed).');
 }
+
 
 async function nextBrandId() {
   const brands = await getBrands();
@@ -386,12 +520,26 @@ async function getPricing() {
 }
 
 async function savePricing(data) {
+  console.log('[savePricing] Starting save');
   const db = firebase.getDb();
   if (db) {
-    await db.collection('settings').doc('pricing').set(data);
+    try {
+      await db.collection('settings').doc('pricing').set(data);
+      console.log('[savePricing] Successfully saved to Firestore');
+    } catch (err) {
+      console.error('[savePricing] Firestore save failed:', err.message);
+    }
   }
-  fs.writeFileSync(PRICING_PATH, JSON.stringify(data, null, 2));
+
+  try {
+    fs.writeFileSync(PRICING_PATH, JSON.stringify(data, null, 2));
+    console.log('[savePricing] Successfully saved to JSON fallback');
+  } catch (err) {
+    console.error('[savePricing] JSON fallback save failed:', err.message);
+  }
+
   _cachedMarkup = data.defaultMarkup || 0; // keep markup cache in sync
+  console.log('[savePricing] Completed.');
 }
 
 // ── Orders ───────────────────────────────────────────────────────
@@ -399,46 +547,87 @@ const ORDER_STATUSES = ['pending', 'confirmed', 'processing', 'shipped', 'delive
 
 async function getOrders() {
   const db = firebase.getDb();
-  if (!db) return [];
-  try {
-    const snap = await db.collection('orders').orderBy('date', 'desc').get();
-    return snap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
-  } catch (e) {
-    console.warn('Orders fetch failed:', e.message);
-    const snap = await db.collection('orders').get();
-    const orders = snap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
-    orders.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-    return orders;
+  if (db) {
+    try {
+      const snap = await db.collection('orders').orderBy('date', 'desc').get();
+      return snap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
+    } catch (e) {
+      console.warn('[getOrders] Firestore failed — falling back to JSON:', e.message);
+    }
   }
+  if (fs.existsSync(ORDERS_PATH)) return JSON.parse(fs.readFileSync(ORDERS_PATH, 'utf-8'));
+  return [];
 }
 
 async function getOrderById(firestoreId) {
   const db = firebase.getDb();
-  if (!db) return null;
-  const doc = await db.collection('orders').doc(firestoreId).get();
-  if (!doc.exists) return null;
-  return { firestoreId: doc.id, ...doc.data() };
+  if (db) {
+    try {
+      const doc = await db.collection('orders').doc(firestoreId).get();
+      if (doc.exists) return { firestoreId: doc.id, ...doc.data() };
+    } catch (e) {
+      console.warn('[getOrderById] Firestore failed — falling back to JSON:', e.message);
+    }
+  }
+  if (fs.existsSync(ORDERS_PATH)) {
+    const orders = JSON.parse(fs.readFileSync(ORDERS_PATH, 'utf-8'));
+    return orders.find(o => o.firestoreId === firestoreId || o.orderId === firestoreId) || null;
+  }
+  return null;
 }
 
 async function getOrderByOrderId(orderId) {
   const db = firebase.getDb();
-  if (!db) return null;
-  const snap = await db.collection('orders').where('orderId', '==', orderId).limit(1).get();
-  if (snap.empty) return null;
-  return { firestoreId: snap.docs[0].id, ...snap.docs[0].data() };
+  if (db) {
+    try {
+      const snap = await db.collection('orders').where('orderId', '==', orderId).limit(1).get();
+      if (!snap.empty) return { firestoreId: snap.docs[0].id, ...snap.docs[0].data() };
+    } catch (e) {
+      console.warn('[getOrderByOrderId] Firestore failed — falling back to JSON:', e.message);
+    }
+  }
+  if (fs.existsSync(ORDERS_PATH)) {
+    const orders = JSON.parse(fs.readFileSync(ORDERS_PATH, 'utf-8'));
+    return orders.find(o => o.orderId === orderId) || null;
+  }
+  return null;
 }
 
 async function updateOrderStatus(firestoreId, status, note) {
   const db = firebase.getDb();
-  if (!db) return;
-  const update = { status };
   const event = { status, ts: new Date().toISOString() };
   if (note) event.note = note;
-  await db.collection('orders').doc(firestoreId).update({
-    status,
-    statusUpdatedAt: new Date().toISOString(),
-    statusHistory: admin.firestore.FieldValue.arrayUnion(event),
-  });
+
+  // Always update JSON fallback first
+  try {
+    if (fs.existsSync(ORDERS_PATH)) {
+      const orders = JSON.parse(fs.readFileSync(ORDERS_PATH, 'utf-8'));
+      const idx = orders.findIndex(o => o.firestoreId === firestoreId || o.orderId === firestoreId);
+      if (idx !== -1) {
+        orders[idx].status = status;
+        orders[idx].statusUpdatedAt = new Date().toISOString();
+        if (!orders[idx].statusHistory) orders[idx].statusHistory = [];
+        orders[idx].statusHistory.push(event);
+        fs.writeFileSync(ORDERS_PATH, JSON.stringify(orders, null, 2));
+        console.log('[updateOrderStatus] JSON fallback updated for order:', firestoreId);
+      }
+    }
+  } catch (err) {
+    console.error('[updateOrderStatus] JSON fallback update failed:', err.message);
+  }
+
+  if (db) {
+    try {
+      await db.collection('orders').doc(firestoreId).update({
+        status,
+        statusUpdatedAt: new Date().toISOString(),
+        statusHistory: admin.firestore.FieldValue.arrayUnion(event),
+      });
+      console.log('[updateOrderStatus] Firestore updated for order:', firestoreId);
+    } catch (err) {
+      console.warn('[updateOrderStatus] Firestore update failed:', err.message);
+    }
+  }
 }
 
 // ── Firebase Storage upload helper ───────────────────────────────
@@ -500,11 +689,26 @@ async function getCartTotals(items, countryCode) {
     ? pricing.countries.find(c => c.code === countryCode && c.enabled)
     : null;
   const markup   = country && country.markup   != null ? country.markup   : (pricing.defaultMarkup || 0);
-  const delivery = country && country.delivery != null ? country.delivery : (pricing.defaultDelivery || 0);
-  const threshold = pricing.freeShippingThreshold || 0;
+  
+  // Delivery and threshold are configured in USD by admins.
+  // We must convert them to PKR using the live exchange rate so all cart math is uniform.
+  const deliveryUsd = country && country.delivery != null ? country.delivery : (pricing.defaultDelivery || 0);
+  const thresholdUsd = pricing.freeShippingThreshold || 0;
+  
+  const deliveryPkr = (deliveryUsd > 0 && _pkrToUsd.rate > 0) ? Math.round(deliveryUsd / _pkrToUsd.rate) : 0;
+  const thresholdPkr = (thresholdUsd > 0 && _pkrToUsd.rate > 0) ? Math.round(thresholdUsd / _pkrToUsd.rate) : 0;
+
   const markedUp = applyMarkup(sub, markup);
-  const shippingCost = (threshold > 0 && sub >= threshold) ? 0 : delivery;
-  return { subtotal: sub, markup, markedUpTotal: markedUp, delivery: shippingCost, total: markedUp + shippingCost, countryName: country ? country.name : null };
+  const shippingCostPkr = (thresholdPkr > 0 && markedUp >= thresholdPkr) ? 0 : deliveryPkr;
+  
+  return { 
+    subtotal: sub, 
+    markup, 
+    markedUpTotal: markedUp, 
+    delivery: shippingCostPkr, 
+    total: markedUp + shippingCostPkr, 
+    countryName: country ? country.name : null 
+  };
 }
 // Backwards-compatible alias
 function cartTotal(items) {
@@ -680,6 +884,66 @@ app.get('/', async (req, res) => {
   res.render('index', { content, products, brands, cartCount: cart.reduce((s, i) => s + i.qty, 0) });
 });
 
+
+app.get('/contact', (req, res) => {
+  const cart = req.session.cart || [];
+  const success = req.query.success === '1';
+  res.render('contact', { content, cartCount: cart.reduce((s, i) => s + i.qty, 0), success });
+});
+
+app.post('/contact', async (req, res) => {
+  const { name, email, message } = req.body;
+  console.log('[contact] New submission — name:', name, '| email:', email);
+
+  if (!name || !email || !message) {
+    console.warn('[contact] Missing required fields');
+    const cart = req.session.cart || [];
+    return res.render('contact', {
+      content,
+      cartCount: cart.reduce((s, i) => s + i.qty, 0),
+      success: false,
+      error: 'Please fill in all required fields.',
+    });
+  }
+
+  const submission = {
+    name: name.trim(),
+    email: email.trim(),
+    message: message.trim(),
+    submittedAt: new Date().toISOString(),
+    read: false,
+  };
+
+  // ── Firestore ────────────────────────────────────────────
+  const db = firebase.getDb();
+  if (db) {
+    try {
+      const ref = await db.collection('contact_submissions').add(submission);
+      console.log('[contact] Saved to Firestore with ID:', ref.id);
+    } catch (err) {
+      console.error('[contact] Firestore save failed:', err.message);
+    }
+  } else {
+    console.warn('[contact] No Firestore connection — skipping cloud save');
+  }
+
+  // ── JSON fallback ────────────────────────────────────────
+  try {
+    const CONTACT_PATH = path.join(__dirname, 'data/contact_submissions.json');
+    let existing = [];
+    if (fs.existsSync(CONTACT_PATH)) {
+      existing = JSON.parse(fs.readFileSync(CONTACT_PATH, 'utf-8'));
+    }
+    existing.push(submission);
+    fs.writeFileSync(CONTACT_PATH, JSON.stringify(existing, null, 2));
+    console.log('[contact] Saved to JSON fallback. Total submissions:', existing.length);
+  } catch (err) {
+    console.error('[contact] JSON fallback save failed:', err.message);
+  }
+
+  res.redirect('/contact?success=1');
+});
+
 // ════════════════════════════════════════════════════════════════
 // PRODUCTS
 // ════════════════════════════════════════════════════════════════
@@ -759,7 +1023,15 @@ app.get('/products/:id', async (req, res) => {
     // Resolve brand for breadcrumb
     let brand = null;
     if (product.brandId) brand = await getBrandById(product.brandId);
-    res.render('product-detail', { content, product, related, brand, cartCount: cart.reduce((s, i) => s + i.qty, 0) });
+    res.render('product-detail', { 
+      content, 
+      product, 
+      related, 
+      brand, 
+      cartCount: cart.reduce((s, i) => s + i.qty, 0),
+      pricing: await getPricing(),
+      _pkrRate: typeof _pkrRate !== 'undefined' ? _pkrRate : 0.0036
+    });
   } catch (err) {
     console.error(err);
     res.redirect('/products');
@@ -831,7 +1103,7 @@ app.get('/cart', async (req, res) => {
   const country = req.session.country || null;
   const totals = await getCartTotals(items, country);
   const pricing = await getPricing();
-  res.render('cart', { content, items, totals, pricing, selectedCountry: country, cartCount: items.reduce((s, i) => s + i.qty, 0) });
+  res.render('cart', { content, items, totals, pricing, selectedCountry: country, cartCount: items.reduce((s, i) => s + i.qty, 0), _pkrRate: _pkrToUsd.rate });
 });
 
 app.post('/cart/country', (req, res) => {
@@ -841,10 +1113,10 @@ app.post('/cart/country', (req, res) => {
 
 app.post('/cart/add', async (req, res) => {
   const id  = parseInt(req.body.id);
-  const qty = parseInt(req.body.qty) || 1;
+  const qty = Math.max(1, Math.min(parseInt(req.body.qty) || 1, 99)); // enforce 1–99 server-side
   if (!req.session.cart) req.session.cart = [];
   const existing = req.session.cart.find(i => i.id === id);
-  if (existing) existing.qty += qty;
+  if (existing) existing.qty = Math.min(existing.qty + qty, 99); // cap total at 99
   else req.session.cart.push({ id, qty });
 
   if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
@@ -909,10 +1181,32 @@ app.post('/checkout', async (req, res) => {
     statusHistory: [{ status: 'pending', ts: new Date().toISOString() }],
   };
 
-  // Persist order to Firestore if available
+  // Persist order — dual-write: Firestore + JSON fallback
   const db = firebase.getDb();
   if (db) {
-    await db.collection('orders').add(order).catch(console.error);
+    try {
+      const ref = await db.collection('orders').add(order);
+      order.firestoreId = ref.id;
+      console.log('[checkout] Order saved to Firestore:', ref.id);
+    } catch (err) {
+      console.error('[checkout] Firestore save failed:', err.message);
+      order.firestoreId = order.orderId;
+    }
+  } else {
+    order.firestoreId = order.orderId; // Mock ID for JSON mode
+  }
+
+  // Always write to JSON fallback
+  try {
+    let orders = [];
+    if (fs.existsSync(ORDERS_PATH)) {
+      orders = JSON.parse(fs.readFileSync(ORDERS_PATH, 'utf-8'));
+    }
+    orders.push(order);
+    fs.writeFileSync(ORDERS_PATH, JSON.stringify(orders, null, 2));
+    console.log('[checkout] Order saved to JSON fallback. orderId:', order.orderId);
+  } catch (err) {
+    console.error('[checkout] JSON fallback save failed:', err.message);
   }
 
   req.session.lastOrder = order;
@@ -1024,6 +1318,20 @@ app.post('/api/paddle/complete', async (req, res) => {
       paddleTransactionId: pending.paddleTransactionId,
       paddleStatus: 'completed',
     }).catch(console.error);
+  } else {
+    // JSON fallback
+    let orders = [];
+    if (fs.existsSync(ORDERS_PATH)) {
+      orders = JSON.parse(fs.readFileSync(ORDERS_PATH, 'utf-8'));
+    }
+    const orderToSave = {
+      ...order,
+      paddleTransactionId: pending.paddleTransactionId,
+      paddleStatus: 'completed',
+    };
+    orderToSave.firestoreId = orderToSave.orderId; // Mock ID
+    orders.push(orderToSave);
+    fs.writeFileSync(ORDERS_PATH, JSON.stringify(orders, null, 2));
   }
 
   req.session.lastOrder = order;
@@ -1189,7 +1497,7 @@ app.get('/admin/logout', (req, res) => {
 // ════════════════════════════════════════════════════════════════
 app.get('/admin', requireAdmin, async (req, res) => {
   const [products, catalogues, brands, orders] = await Promise.all([getProducts(), getCatalogues(), getBrands(), getOrders()]);
-  res.render('admin/dashboard', { products, catalogues, brands, orders });
+  res.render('admin/dashboard', { products, catalogues, brands, orders, activePage: 'dashboard' });
 });
 
 // ════════════════════════════════════════════════════════════════
@@ -1683,6 +1991,48 @@ app.post('/admin/orders/:id/status', requireAdmin, async (req, res) => {
     console.error(err);
     res.redirect(`/admin/orders/${req.params.id}?error=` + encodeURIComponent('Update failed: ' + err.message));
   }
+});
+
+// ════════════════════════════════════════════════════════════════
+// ADMIN — CONTACT MESSAGES
+// ════════════════════════════════════════════════════════════════
+app.get('/admin/messages', requireAdmin, async (req, res) => {
+  console.log('[admin/messages] Loading contact submissions');
+  let messages = [];
+
+  const db = firebase.getDb();
+  if (db) {
+    try {
+      const snap = await db.collection('contact_submissions').orderBy('submittedAt', 'desc').get();
+      messages = snap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
+      console.log('[admin/messages] Loaded', messages.length, 'from Firestore');
+    } catch (err) {
+      console.warn('[admin/messages] orderBy failed (index may be missing), trying unordered:', err.message);
+      try {
+        const snap = await db.collection('contact_submissions').get();
+        messages = snap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
+        messages.sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
+        console.log('[admin/messages] Loaded', messages.length, 'from Firestore (unordered fallback)');
+      } catch (err2) {
+        console.error('[admin/messages] Firestore load failed entirely:', err2.message);
+      }
+    }
+  }
+
+  // Fallback to JSON if Firestore returned nothing
+  if (messages.length === 0) {
+    try {
+      const CONTACT_PATH = path.join(__dirname, 'data/contact_submissions.json');
+      if (fs.existsSync(CONTACT_PATH)) {
+        messages = JSON.parse(fs.readFileSync(CONTACT_PATH, 'utf-8'));
+        console.log('[admin/messages] Loaded', messages.length, 'from JSON fallback');
+      }
+    } catch (err) {
+      console.error('[admin/messages] JSON fallback load failed:', err.message);
+    }
+  }
+
+  res.render('admin/messages', { activePage: 'messages', messages });
 });
 
 // ════════════════════════════════════════════════════════════════

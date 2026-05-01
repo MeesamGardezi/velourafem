@@ -1,7 +1,7 @@
 {
-  "defaultMarkup": 300,
-  "defaultDelivery": 5000,
-  "freeShippingThreshold": 50000,
+  "defaultMarkup": 2,
+  "defaultDelivery": 20,
+  "freeShippingThreshold": 200,
   "countries": [
     {
       "code": "PK",

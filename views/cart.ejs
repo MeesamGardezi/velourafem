@@ -4,7 +4,7 @@
 
 <%- include('partials/nav') %>
 
-<main class="cart-main">
+<main class="cart-main" data-markup="<%= pricing.defaultMarkup || 0 %>" data-rate="<%= typeof _pkrRate !== 'undefined' ? _pkrRate : 0.0036 %>">
   <!-- Breadcrumb -->
   <nav class="breadcrumb shop-breadcrumb">
     <a href="/">Home</a>
@@ -52,14 +52,13 @@
                 <p class="cart-item-unit-price"><%= priceUsd(item.price) %> each</p>
 
                 <div class="cart-item-actions">
-                  <form action="/cart/update" method="POST" class="cart-qty-form">
+                  <form action="/cart/update" method="POST" class="cart-qty-form" id="qty-form-<%= item.id %>">
                     <input type="hidden" name="id" value="<%= item.id %>">
                     <button type="button" class="qty-btn qty-minus-btn">−</button>
-                    <input type="number" name="qty" value="<%= item.qty %>" min="1" max="10" class="qty-input cart-qty-input" data-id="<%= item.id %>">
+                    <input type="number" name="qty" value="<%= item.qty %>" min="1" max="10" class="qty-input cart-qty-input" readonly>
                     <button type="button" class="qty-btn qty-plus-btn">+</button>
-                    <button type="submit" class="cart-update-btn">Update</button>
                   </form>
-                  <form action="/cart/remove" method="POST">
+                  <form action="/cart/remove" method="POST" class="cart-remove-form">
                     <input type="hidden" name="id" value="<%= item.id %>">
                     <button type="submit" class="cart-remove-btn">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
@@ -68,7 +67,7 @@
                   </form>
                 </div>
               </div>
-              <div class="cart-item-price">
+              <div class="cart-item-price item-total-price" data-unit-price="<%= item.price %>">
                 <%= priceUsd(item.price * item.qty) %>
               </div>
             </div>
@@ -121,8 +120,14 @@
           </a>
 
           <div class="cart-trust-row">
-            <span>🔒 Secure Checkout</span>
-            <span>📦 Free Shipping</span>
+            <span style="display:inline-flex;align-items:center;gap:6px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Secure Checkout
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:6px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              Free Shipping
+            </span>
           </div>
         </div>
       </div>
